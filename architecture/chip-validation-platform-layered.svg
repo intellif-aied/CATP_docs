@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1320" viewBox="0 0 1800 1320" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1395" viewBox="0 0 1800 1395" role="img" aria-labelledby="title desc">
   <title id="title">芯片软件验证自动化平台五层分层架构</title>
   <desc id="desc">从基础资源与存储层、平台组件与能力层、管理模块与规则编排层、Agent 层到展示与协同层的分层架构图。</desc>
   <defs>
@@ -71,8 +71,8 @@
 
   <!-- Layer 4 -->
   <g id="layer-4">
-    <rect class="layer" x="50" y="315" width="1700" height="250" rx="22" fill="#fff7ed" stroke="#ea580c"/>
-    <rect x="70" y="339" width="165" height="202" rx="18" fill="#c2410c"/>
+    <rect class="layer" x="50" y="315" width="1700" height="325" rx="22" fill="#fff7ed" stroke="#ea580c"/>
+    <rect x="70" y="339" width="165" height="277" rx="18" fill="#c2410c"/>
     <text class="layer-title" x="94" y="409">第四层</text>
     <text class="layer-title" x="94" y="439">Agent 层</text>
     <text class="layer-subtitle" x="94" y="469">专用 Agent</text>
@@ -117,52 +117,52 @@
 
   <!-- Layer 3 -->
   <g id="layer-3">
-    <rect class="layer" x="50" y="595" width="1700" height="275" rx="22" fill="#f0fdf4" stroke="#16a34a"/>
-    <rect x="70" y="621" width="165" height="223" rx="18" fill="#15803d"/>
+    <rect class="layer" x="50" y="670" width="1700" height="275" rx="22" fill="#f0fdf4" stroke="#16a34a"/>
+    <rect x="70" y="696" width="165" height="223" rx="18" fill="#15803d"/>
     <text class="layer-title" x="94" y="692">第三层</text>
     <text class="layer-title" x="94" y="722">管理与规则</text>
     <text class="layer-subtitle" x="94" y="752">业务对象</text>
     <text class="layer-subtitle" x="94" y="775">状态机 / 策略</text>
 
-    <rect class="card" x="270" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="292" y="650">需求管理</text>
-    <text class="card-text" x="292" y="672">需求拆解、覆盖关系、变更影响、准入追踪</text>
+    <rect class="card" x="270" y="698" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="292" y="725">需求管理</text>
+    <text class="card-text" x="292" y="747">需求拆解、覆盖关系、变更影响、准入追踪</text>
 
-    <rect class="card" x="560" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="582" y="650">用例管理</text>
-    <text class="card-text" x="582" y="672">用例库、平台适配、风险等级、历史通过率</text>
+    <rect class="card" x="560" y="698" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="582" y="725">用例管理</text>
+    <text class="card-text" x="582" y="747">用例库、平台适配、风险等级、历史通过率</text>
 
-    <rect class="card" x="850" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="872" y="650">资源管理</text>
-    <text class="card-text" x="872" y="672">能力、健康、占用、预约、暂停、调试状态</text>
+    <rect class="card" x="850" y="698" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="872" y="725">资源管理</text>
+    <text class="card-text" x="872" y="747">能力、健康、占用、预约、暂停、调试状态</text>
 
-    <rect class="card" x="1140" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="1162" y="650">里程碑管理</text>
-    <text class="card-text" x="1162" y="672">阶段门、投片准入项、完成度、风险收敛</text>
+    <rect class="card" x="1140" y="698" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="1162" y="725">里程碑管理</text>
+    <text class="card-text" x="1162" y="747">阶段门、投片准入项、完成度、风险收敛</text>
 
-    <rect class="card" x="1430" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="1452" y="650">执行计划管理</text>
-    <text class="card-text" x="1452" y="672">全量、冒烟、增量、夜间、专项定位计划</text>
+    <rect class="card" x="1430" y="698" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="1452" y="725">执行计划管理</text>
+    <text class="card-text" x="1452" y="747">全量、冒烟、增量、夜间、专项定位计划</text>
 
-    <rect class="card" x="270" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="292" y="742">执行任务管理</text>
-    <text class="card-text" x="292" y="764">排队、调度、执行、复跑、迁移、取消</text>
+    <rect class="card" x="270" y="790" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="292" y="817">执行任务管理</text>
+    <text class="card-text" x="292" y="839">排队、调度、执行、复跑、迁移、取消</text>
 
-    <rect class="card" x="560" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="582" y="742">Issue 管理</text>
-    <text class="card-text" x="582" y="764">失败归因、owner、已知问题、修复闭环</text>
+    <rect class="card" x="560" y="790" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="582" y="817">Issue 管理</text>
+    <text class="card-text" x="582" y="839">失败归因、owner、已知问题、修复闭环</text>
 
-    <rect class="card" x="850" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="872" y="742">PR 管理</text>
-    <text class="card-text" x="872" y="764">变更解析、评审、CI 结果、修复验证</text>
+    <rect class="card" x="850" y="790" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="872" y="817">PR 管理</text>
+    <text class="card-text" x="872" y="839">变更解析、评审、CI 结果、修复验证</text>
 
-    <rect class="card" x="1140" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="1162" y="742">规则引擎</text>
-    <text class="card-text" x="1162" y="764">准入、调度、复跑、风险、升级策略</text>
+    <rect class="card" x="1140" y="790" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="1162" y="817">规则引擎</text>
+    <text class="card-text" x="1162" y="839">准入、调度、复跑、风险、升级策略</text>
 
-    <rect class="card" x="1430" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
-    <text class="card-title" x="1452" y="742">事件驱动编排</text>
-    <text class="card-text" x="1452" y="764">事件总线、状态机、DAG、SLA、补偿</text>
+    <rect class="card" x="1430" y="790" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="1452" y="817">事件驱动编排</text>
+    <text class="card-text" x="1452" y="839">事件总线、状态机、DAG、SLA、补偿</text>
 
     <rect x="270" y="810" width="1430" height="36" rx="18" fill="#dcfce7" stroke="#86efac"/>
     <text class="card-small" x="292" y="833">本层是平台状态中心：所有 Agent 动作必须读写统一业务对象、统一状态机和统一事件，避免重复执行、抢资源和结果覆盖。</text>
@@ -170,97 +170,97 @@
 
   <!-- Layer 2 -->
   <g id="layer-2">
-    <rect class="layer" x="50" y="900" width="1700" height="245" rx="22" fill="#ecfeff" stroke="#0891b2"/>
+    <rect class="layer" x="50" y="975" width="1700" height="245" rx="22" fill="#ecfeff" stroke="#0891b2"/>
     <rect x="70" y="924" width="165" height="197" rx="18" fill="#0e7490"/>
     <text class="layer-title" x="94" y="992">第二层</text>
     <text class="layer-title" x="94" y="1022">组件与能力</text>
     <text class="layer-subtitle" x="94" y="1052">运行 / 工具</text>
     <text class="layer-subtitle" x="94" y="1075">可插拔 / 可观测</text>
 
-    <rect class="card" x="270" y="927" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="292" y="951">K8s / Worker Runtime</text>
-    <text class="card-text" x="292" y="973">Job、Pod、Cron、弹性伸缩、执行沙箱、超时隔离</text>
+    <rect class="card" x="270" y="1002" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="292" y="1026">K8s / Worker Runtime</text>
+    <text class="card-text" x="292" y="1048">Job、Pod、Cron、弹性伸缩、执行沙箱、超时隔离</text>
 
-    <rect class="card" x="740" y="927" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="762" y="951">Queue / Lock</text>
-    <text class="card-text" x="762" y="973">优先级队列、资源锁、幂等、去重、冲突仲裁</text>
+    <rect class="card" x="740" y="1002" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="762" y="1026">Queue / Lock</text>
+    <text class="card-text" x="762" y="1048">优先级队列、资源锁、幂等、去重、冲突仲裁</text>
 
-    <rect class="card" x="1210" y="927" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="1232" y="951">Log Pipeline</text>
-    <text class="card-text" x="1232" y="973">执行日志、系统日志、Agent Trace、结构化解析</text>
+    <rect class="card" x="1210" y="1002" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="1232" y="1026">Log Pipeline</text>
+    <text class="card-text" x="1232" y="1048">执行日志、系统日志、Agent Trace、结构化解析</text>
 
-    <rect class="card" x="270" y="997" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="292" y="1021">MCP 组件</text>
-    <text class="card-text" x="292" y="1043">Server Registry、Tool Gateway、连接健康、调用审计</text>
+    <rect class="card" x="270" y="1072" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="292" y="1096">MCP 组件</text>
+    <text class="card-text" x="292" y="1118">Server Registry、Tool Gateway、连接健康、调用审计</text>
 
-    <rect class="card" x="740" y="997" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="762" y="1021">Skill 组件</text>
-    <text class="card-text" x="762" y="1043">Skill 包、参数 Schema、版本、依赖、评审、发布</text>
+    <rect class="card" x="740" y="1072" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="762" y="1096">Skill 组件</text>
+    <text class="card-text" x="762" y="1118">Skill 包、参数 Schema、版本、依赖、评审、发布</text>
 
-    <rect class="card" x="1210" y="997" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="1232" y="1021">Subagent 组件</text>
-    <text class="card-text" x="1232" y="1043">角色模板、上下文隔离、协作拓扑、结果汇总</text>
+    <rect class="card" x="1210" y="1072" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="1232" y="1096">Subagent 组件</text>
+    <text class="card-text" x="1232" y="1118">角色模板、上下文隔离、协作拓扑、结果汇总</text>
 
-    <rect class="card" x="270" y="1067" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="292" y="1091">Artifacts 组件</text>
-    <text class="card-text" x="292" y="1113">日志、Trace、Dump、波形、报告、复现脚本索引</text>
+    <rect class="card" x="270" y="1142" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="292" y="1166">Artifacts 组件</text>
+    <text class="card-text" x="292" y="1188">日志、Trace、Dump、波形、报告、复现脚本索引</text>
 
-    <rect class="card" x="740" y="1067" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="762" y="1091">Observability</text>
-    <text class="card-text" x="762" y="1113">Metrics、Audit、Agent 成本、质量评分、SLA</text>
+    <rect class="card" x="740" y="1142" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="762" y="1166">Observability</text>
+    <text class="card-text" x="762" y="1188">Metrics、Audit、Agent 成本、质量评分、SLA</text>
 
-    <rect class="card" x="1210" y="1067" width="450" height="55" rx="12" stroke="#0891b2"/>
-    <text class="card-title" x="1232" y="1091">Secret / Access</text>
-    <text class="card-text" x="1232" y="1113">凭据托管、工具授权、资源操作审批、越权防护</text>
+    <rect class="card" x="1210" y="1142" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="1232" y="1166">Secret / Access</text>
+    <text class="card-text" x="1232" y="1188">凭据托管、工具授权、资源操作审批、越权防护</text>
   </g>
 
   <!-- Layer 1 -->
   <g id="layer-1">
-    <rect class="layer" x="50" y="1175" width="1700" height="115" rx="22" fill="#eef2ff" stroke="#4f46e5"/>
-    <rect x="70" y="1197" width="165" height="70" rx="18" fill="#4338ca"/>
-    <text class="layer-title" x="94" y="1226">第一层</text>
-    <text class="layer-title" x="94" y="1255">资源与存储</text>
+    <rect class="layer" x="50" y="1250" width="1700" height="115" rx="22" fill="#eef2ff" stroke="#4f46e5"/>
+    <rect x="70" y="1272" width="165" height="70" rx="18" fill="#4338ca"/>
+    <text class="layer-title" x="94" y="1301">第一层</text>
+    <text class="layer-title" x="94" y="1330">资源与存储</text>
 
-    <rect class="card" x="270" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
-    <text class="card-title" x="291" y="1222">SQL DB</text>
-    <text class="card-small" x="291" y="1244">业务元数据 / 状态</text>
+    <rect class="card" x="270" y="1269" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="291" y="1297">SQL DB</text>
+    <text class="card-small" x="291" y="1319">业务元数据 / 状态</text>
 
-    <rect class="card" x="454" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
-    <text class="card-title" x="475" y="1222">S3 / MinIO</text>
-    <text class="card-small" x="475" y="1244">日志 / Artifact 大文件</text>
+    <rect class="card" x="454" y="1269" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="475" y="1297">S3 / MinIO</text>
+    <text class="card-small" x="475" y="1319">日志 / Artifact 大文件</text>
 
-    <rect class="card" x="638" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
-    <text class="card-title" x="659" y="1222">Redis</text>
-    <text class="card-small" x="659" y="1244">队列缓存 / 锁 / 心跳</text>
+    <rect class="card" x="638" y="1269" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="659" y="1297">Redis</text>
+    <text class="card-small" x="659" y="1319">队列缓存 / 锁 / 心跳</text>
 
-    <rect class="card" x="822" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
-    <text class="card-title" x="843" y="1222">EMU 池</text>
-    <text class="card-small" x="843" y="1244">RTL 行为 / Trace 定位</text>
+    <rect class="card" x="822" y="1269" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="843" y="1297">EMU 池</text>
+    <text class="card-small" x="843" y="1319">RTL 行为 / Trace 定位</text>
 
-    <rect class="card" x="1006" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
-    <text class="card-title" x="1027" y="1222">FPGA 池</text>
-    <text class="card-small" x="1027" y="1244">真实硬件 / 长稳压测</text>
+    <rect class="card" x="1006" y="1269" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="1027" y="1297">FPGA 池</text>
+    <text class="card-small" x="1027" y="1319">真实硬件 / 长稳压测</text>
 
-    <rect class="card" x="1190" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
-    <text class="card-title" x="1211" y="1222">CPU Farm</text>
-    <text class="card-small" x="1211" y="1244">编译 / 仿真 / 分析</text>
+    <rect class="card" x="1190" y="1269" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="1211" y="1297">CPU Farm</text>
+    <text class="card-small" x="1211" y="1319">编译 / 仿真 / 分析</text>
 
-    <rect class="card" x="1374" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
-    <text class="card-title" x="1395" y="1222">QEMU / Model</text>
-    <text class="card-small" x="1395" y="1244">cmodel / amodel 快速筛查</text>
+    <rect class="card" x="1374" y="1269" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="1395" y="1297">QEMU / Model</text>
+    <text class="card-small" x="1395" y="1319">cmodel / amodel 快速筛查</text>
 
-    <rect class="card" x="1558" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
-    <text class="card-title" x="1579" y="1222">Git / CI</text>
-    <text class="card-small" x="1579" y="1244">PR / Commit / Build 产物</text>
+    <rect class="card" x="1558" y="1269" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="1579" y="1297">Git / CI</text>
+    <text class="card-small" x="1579" y="1319">PR / Commit / Build 产物</text>
   </g>
 
   <!-- Layer flow arrows -->
-  <path class="flow" d="M 900 1167 L 900 1152"/>
-  <text class="flow-label" x="920" y="1163">封装为平台能力</text>
-  <path class="flow" d="M 900 892 L 900 877"/>
-  <text class="flow-label" x="920" y="888">沉淀业务状态和规则</text>
-  <path class="flow" d="M 900 587 L 900 572"/>
-  <text class="flow-label" x="920" y="583">驱动目的明确的 Agent</text>
+  <path class="flow" d="M 900 1242 L 900 1227"/>
+  <text class="flow-label" x="920" y="1238">封装为平台能力</text>
+  <path class="flow" d="M 900 967 L 900 952"/>
+  <text class="flow-label" x="920" y="963">沉淀业务状态和规则</text>
+  <path class="flow" d="M 900 662 L 900 647"/>
+  <text class="flow-label" x="920" y="658">驱动目的明确的 Agent</text>
   <path class="flow" d="M 900 307 L 900 292"/>
   <text class="flow-label" x="920" y="303">呈现给用户并支持人工协同</text>
 </svg>
