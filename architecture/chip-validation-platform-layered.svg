@@ -29,7 +29,7 @@
     </style>
   </defs>
 
-  <rect class="page" x="0" y="0" width="1800" height="1320"/>
+  <rect class="page" x="0" y="0" width="1800" height="1395"/>
   <text class="title" x="70" y="56">芯片软件验证自动化平台五层分层架构</text>
   <text class="subtitle" x="70" y="88">自下而上：基础资源与存储 → 平台组件与能力 → 管理模块与规则编排 → 目的明确的 Agent → 展示与协同</text>
   <text class="note" x="1430" y="60">面向投片前验证</text>
@@ -119,10 +119,10 @@
   <g id="layer-3">
     <rect class="layer" x="50" y="670" width="1700" height="275" rx="22" fill="#f0fdf4" stroke="#16a34a"/>
     <rect x="70" y="696" width="165" height="223" rx="18" fill="#15803d"/>
-    <text class="layer-title" x="94" y="692">第三层</text>
-    <text class="layer-title" x="94" y="722">管理与规则</text>
-    <text class="layer-subtitle" x="94" y="752">业务对象</text>
-    <text class="layer-subtitle" x="94" y="775">状态机 / 策略</text>
+    <text class="layer-title" x="94" y="767">第三层</text>
+    <text class="layer-title" x="94" y="797">管理与规则</text>
+    <text class="layer-subtitle" x="94" y="827">业务对象</text>
+    <text class="layer-subtitle" x="94" y="850">状态机 / 策略</text>
 
     <rect class="card" x="270" y="698" width="270" height="70" rx="12" stroke="#16a34a"/>
     <text class="card-title" x="292" y="725">需求管理</text>
@@ -164,18 +164,18 @@
     <text class="card-title" x="1452" y="817">事件驱动编排</text>
     <text class="card-text" x="1452" y="839">事件总线、状态机、DAG、SLA、补偿</text>
 
-    <rect x="270" y="810" width="1430" height="36" rx="18" fill="#dcfce7" stroke="#86efac"/>
-    <text class="card-small" x="292" y="833">本层是平台状态中心：所有 Agent 动作必须读写统一业务对象、统一状态机和统一事件，避免重复执行、抢资源和结果覆盖。</text>
+    <rect x="270" y="885" width="1430" height="36" rx="18" fill="#dcfce7" stroke="#86efac"/>
+    <text class="card-small" x="292" y="908">本层是平台状态中心：所有 Agent 动作必须读写统一业务对象、统一状态机和统一事件，避免重复执行、抢资源和结果覆盖。</text>
   </g>
 
   <!-- Layer 2 -->
   <g id="layer-2">
     <rect class="layer" x="50" y="975" width="1700" height="245" rx="22" fill="#ecfeff" stroke="#0891b2"/>
-    <rect x="70" y="924" width="165" height="197" rx="18" fill="#0e7490"/>
-    <text class="layer-title" x="94" y="992">第二层</text>
-    <text class="layer-title" x="94" y="1022">组件与能力</text>
-    <text class="layer-subtitle" x="94" y="1052">运行 / 工具</text>
-    <text class="layer-subtitle" x="94" y="1075">可插拔 / 可观测</text>
+    <rect x="70" y="999" width="165" height="197" rx="18" fill="#0e7490"/>
+    <text class="layer-title" x="94" y="1067">第二层</text>
+    <text class="layer-title" x="94" y="1097">组件与能力</text>
+    <text class="layer-subtitle" x="94" y="1127">运行 / 工具</text>
+    <text class="layer-subtitle" x="94" y="1150">可插拔 / 可观测</text>
 
     <rect class="card" x="270" y="1002" width="450" height="55" rx="12" stroke="#0891b2"/>
     <text class="card-title" x="292" y="1026">K8s / Worker Runtime</text>

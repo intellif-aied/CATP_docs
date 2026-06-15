@@ -208,15 +208,15 @@
   <text class="small-title" x="105" y="1175">跨模块协议</text>
   <rect x="105" y="1195" width="210" height="34" rx="17" fill="#334155"/>
   <text class="pill" x="131" y="1217">Event Schema</text>
-  <rect x="350" y="1145" width="210" height="34" rx="17" fill="#334155"/>
-  <text class="pill" x="376" y="1167">Version Matrix</text>
-  <rect x="595" y="1145" width="210" height="34" rx="17" fill="#334155"/>
-  <text class="pill" x="621" y="1167">Result JSON</text>
-  <rect x="840" y="1145" width="210" height="34" rx="17" fill="#334155"/>
-  <text class="pill" x="866" y="1167">Resource Lease</text>
-  <rect x="1085" y="1145" width="210" height="34" rx="17" fill="#334155"/>
-  <text class="pill" x="1111" y="1167">Fail Snapshot</text>
-  <rect x="1330" y="1145" width="210" height="34" rx="17" fill="#334155"/>
-  <text class="pill" x="1356" y="1167">Agent Output</text>
+  <rect x="350" y="1195" width="210" height="34" rx="17" fill="#334155"/>
+  <text class="pill" x="376" y="1217">Version Matrix</text>
+  <rect x="595" y="1195" width="210" height="34" rx="17" fill="#334155"/>
+  <text class="pill" x="621" y="1217">Result JSON</text>
+  <rect x="840" y="1195" width="210" height="34" rx="17" fill="#334155"/>
+  <text class="pill" x="866" y="1217">Resource Lease</text>
+  <rect x="1085" y="1195" width="210" height="34" rx="17" fill="#334155"/>
+  <text class="pill" x="1111" y="1217">Fail Snapshot</text>
+  <rect x="1330" y="1195" width="210" height="34" rx="17" fill="#334155"/>
+  <text class="pill" x="1356" y="1217">Agent Output</text>
   <text class="note" x="105" y="1248">这些协议保证自动化动作可追溯、可回放、可解释、可审计。</text>
 </svg>
