@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>芯片软件验证自动化平台原型</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <div class="brand">
+          <div class="brand-mark">CV</div>
+          <div>
+            <div class="brand-title">CATP</div>
+            <div class="brand-subtitle">Chip Validation Platform</div>
+          </div>
+        </div>
+
+        <nav class="nav" id="nav">
+          <button class="nav-item active" data-view="dashboard">
+            <span class="nav-icon">D</span><span>总控台</span>
+          </button>
+          <button class="nav-item" data-view="requirements">
+            <span class="nav-icon">R</span><span>需求管理</span>
+          </button>
+          <button class="nav-item" data-view="cases">
+            <span class="nav-icon">C</span><span>用例管理</span>
+          </button>
+          <button class="nav-item" data-view="resources">
+            <span class="nav-icon">H</span><span>资源调度</span>
+          </button>
+          <button class="nav-item" data-view="plans">
+            <span class="nav-icon">P</span><span>执行计划</span>
+          </button>
+          <button class="nav-item" data-view="tasks">
+            <span class="nav-icon">T</span><span>执行任务</span>
+          </button>
+          <button class="nav-item" data-view="failures">
+            <span class="nav-icon">I</span><span>失败 Issue</span>
+          </button>
+          <button class="nav-item" data-view="prs">
+            <span class="nav-icon">G</span><span>PR 验证</span>
+          </button>
+          <button class="nav-item" data-view="agents">
+            <span class="nav-icon">A</span><span>Agent Studio</span>
+          </button>
+          <button class="nav-item" data-view="rules">
+            <span class="nav-icon">E</span><span>事件规则</span>
+          </button>
+          <button class="nav-item" data-view="milestones">
+            <span class="nav-icon">M</span><span>里程碑报告</span>
+          </button>
+          <button class="nav-item" data-view="settings">
+            <span class="nav-icon">S</span><span>管理配置</span>
+          </button>
+          <button class="nav-item" data-view="architecture">
+            <span class="nav-icon">L</span><span>架构总览</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="health-dot"></div>
+          <div>
+            <strong>Nightly Flow</strong>
+            <span>Program Fill active</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="search-wrap">
+            <span class="search-icon">/</span>
+            <input id="globalSearch" type="search" placeholder="搜索需求、用例、任务、Issue、PR、Agent" />
+          </div>
+          <div class="topbar-actions">
+            <select aria-label="项目空间">
+              <option>SoC-A0 / Bring-up</option>
+              <option>SoC-A1 / Tapeout</option>
+              <option>IP-DMA / Regression</option>
+            </select>
+            <button class="icon-button" data-action="open command palette" title="命令面板">⌘</button>
+            <button class="primary-button" data-action="create execution plan">新建计划</button>
+          </div>
+        </header>
+
+        <section class="workspace" id="viewRoot" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
