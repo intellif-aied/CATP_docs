@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1220" viewBox="0 0 1800 1220" role="img" aria-labelledby="title desc">
+  <title id="title">资源管理与调度状态机</title>
+  <desc id="desc">资源状态机、租约状态机和执行任务中断状态机，用于描述不可虚拟化资源的人机共享与抢占保护。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .lane { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .lane-head { fill: #0f172a; }
+      .lane-title { font: 700 22px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .lane-sub { font: 400 14px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.86); }
+      .state { fill: #ffffff; stroke-width: 1.4; }
+      .state-title { font: 700 16px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .state-text { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .arrow { stroke: #475569; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 7 7; }
+      .label { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .note { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" x="0" y="0" width="1800" height="1220"/>
+  <text class="title" x="70" y="58">资源管理与调度状态机</text>
+  <text class="subtitle" x="70" y="90">三个状态机共同保证：不可虚拟化设备独占使用、可中断任务安全释放、人工和程序在昼夜策略下有序切换。</text>
+
+  <!-- Resource state machine -->
+  <rect class="lane" x="55" y="130" width="1690" height="300" rx="22" stroke="#2563eb"/>
+  <rect class="lane-head" x="80" y="156" width="210" height="76" rx="18"/>
+  <text class="lane-title" x="106" y="187">资源状态机</text>
+  <text class="lane-sub" x="106" y="211">ResourceUnit lifecycle</text>
+
+  <rect class="state" x="330" y="168" width="150" height="68" rx="13" stroke="#2563eb"/>
+  <text class="state-title" x="358" y="194">OFFLINE</text>
+  <text class="state-text" x="358" y="216">不可访问</text>
+
+  <rect class="state" x="525" y="168" width="170" height="68" rx="13" stroke="#2563eb"/>
+  <text class="state-title" x="548" y="194">HEALTH_CHECK</text>
+  <text class="state-text" x="548" y="216">健康探测 / 版本探测</text>
+
+  <rect class="state" x="740" y="168" width="140" height="68" rx="13" stroke="#2563eb"/>
+  <text class="state-title" x="783" y="194">IDLE</text>
+  <text class="state-text" x="770" y="216">可调度</text>
+
+  <rect class="state" x="925" y="168" width="150" height="68" rx="13" stroke="#2563eb"/>
+  <text class="state-title" x="956" y="194">RESERVED</text>
+  <text class="state-text" x="948" y="216">预约 / 保留窗口</text>
+
+  <rect class="state" x="1120" y="168" width="150" height="68" rx="13" stroke="#2563eb"/>
+  <text class="state-title" x="1150" y="194">ALLOCATING</text>
+  <text class="state-text" x="1146" y="216">发放独占租约</text>
+
+  <rect class="state" x="1315" y="152" width="165" height="72" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1342" y="179">IN_USE_HUMAN</text>
+  <text class="state-text" x="1348" y="202">人工调试 / 复现</text>
+
+  <rect class="state" x="1315" y="240" width="165" height="72" rx="13" stroke="#0ea5e9"/>
+  <text class="state-title" x="1336" y="267">IN_USE_PROGRAM</text>
+  <text class="state-text" x="1344" y="290">自动执行任务</text>
+
+  <rect class="state" x="1525" y="168" width="150" height="68" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="1562" y="194">DRAINING</text>
+  <text class="state-text" x="1552" y="216">不接新任务</text>
+
+  <rect class="state" x="1120" y="312" width="150" height="68" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="1142" y="338">UNHEALTHY</text>
+  <text class="state-text" x="1146" y="360">自动隔离</text>
+
+  <rect class="state" x="925" y="312" width="150" height="68" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="953" y="338">MAINTENANCE</text>
+  <text class="state-text" x="956" y="360">升级 / 维修</text>
+
+  <path class="arrow" d="M 480 202 L 520 202"/>
+  <path class="arrow" d="M 695 202 L 735 202"/>
+  <path class="arrow" d="M 880 202 L 920 202"/>
+  <path class="arrow" d="M 1075 202 L 1115 202"/>
+  <path class="arrow" d="M 1270 194 C 1288 188 1295 188 1310 188"/>
+  <path class="arrow" d="M 1270 210 C 1288 270 1295 276 1310 276"/>
+  <path class="arrow" d="M 1480 188 L 1520 202"/>
+  <path class="arrow" d="M 1480 276 C 1510 255 1518 235 1525 216"/>
+  <path class="arrow" d="M 1600 236 C 1600 400 800 410 810 241"/>
+  <path class="arrow-soft" d="M 1195 236 L 1195 307"/>
+  <path class="arrow-soft" d="M 1120 346 L 1080 346"/>
+  <path class="arrow-soft" d="M 1000 307 L 1000 241"/>
+  <text class="label" x="1318" y="135">工作时段人工优先</text>
+  <text class="label" x="1318" y="335">夜间程序优先</text>
+
+  <!-- Lease state machine -->
+  <rect class="lane" x="55" y="465" width="1690" height="300" rx="22" stroke="#16a34a"/>
+  <rect class="lane-head" x="80" y="491" width="210" height="76" rx="18"/>
+  <text class="lane-title" x="106" y="522">租约状态机</text>
+  <text class="lane-sub" x="106" y="546">Exclusive lease lifecycle</text>
+
+  <rect class="state" x="330" y="510" width="150" height="68" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="358" y="536">REQUESTED</text>
+  <text class="state-text" x="358" y="558">申请资源</text>
+
+  <rect class="state" x="525" y="510" width="135" height="68" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="555" y="536">QUEUED</text>
+  <text class="state-text" x="552" y="558">等待排序</text>
+
+  <rect class="state" x="705" y="510" width="155" height="68" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="732" y="536">CANDIDATE</text>
+  <text class="state-text" x="727" y="558">候选资源匹配</text>
+
+  <rect class="state" x="905" y="510" width="135" height="68" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="936" y="536">GRANTED</text>
+  <text class="state-text" x="930" y="558">租约发放</text>
+
+  <rect class="state" x="1085" y="510" width="135" height="68" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1125" y="536">ACTIVE</text>
+  <text class="state-text" x="1110" y="558">独占使用</text>
+
+  <rect class="state" x="1265" y="488" width="160" height="68" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="1292" y="514">PREEMPTING</text>
+  <text class="state-text" x="1288" y="536">抢占申请 / 审批</text>
+
+  <rect class="state" x="1265" y="592" width="160" height="68" rx="13" stroke="#0ea5e9"/>
+  <text class="state-title" x="1300" y="618">RENEWING</text>
+  <text class="state-text" x="1290" y="640">人工续约 / 程序续跑</text>
+
+  <rect class="state" x="1480" y="510" width="145" height="68" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1514" y="536">RELEASED</text>
+  <text class="state-text" x="1508" y="558">正常释放</text>
+
+  <rect class="state" x="1480" y="610" width="145" height="68" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="1518" y="636">REVOKED</text>
+  <text class="state-text" x="1506" y="658">中断后释放</text>
+
+  <path class="arrow" d="M 480 544 L 520 544"/>
+  <path class="arrow" d="M 660 544 L 700 544"/>
+  <path class="arrow" d="M 860 544 L 900 544"/>
+  <path class="arrow" d="M 1040 544 L 1080 544"/>
+  <path class="arrow" d="M 1220 544 L 1475 544"/>
+  <path class="arrow-soft" d="M 1220 536 C 1245 525 1248 523 1260 522"/>
+  <path class="arrow-soft" d="M 1425 522 C 1460 522 1460 620 1475 644"/>
+  <path class="arrow-soft" d="M 1152 578 C 1170 665 1230 665 1260 640"/>
+  <path class="arrow-soft" d="M 1345 592 C 1345 565 1280 570 1220 558"/>
+  <text class="label" x="1260" y="467">仅高优先级 + 可中断 + 审批可抢占</text>
+  <text class="label" x="1260" y="700">租约必须有 TTL，人工可续约，过期自动提醒</text>
+
+  <!-- Task interrupt state machine -->
+  <rect class="lane" x="55" y="800" width="1690" height="300" rx="22" stroke="#ea580c"/>
+  <rect class="lane-head" x="80" y="826" width="210" height="76" rx="18"/>
+  <text class="lane-title" x="106" y="857">任务中断状态机</text>
+  <text class="lane-sub" x="106" y="881">Execution task interruption</text>
+
+  <rect class="state" x="330" y="845" width="145" height="68" rx="13" stroke="#ea580c"/>
+  <text class="state-title" x="363" y="871">QUEUED</text>
+  <text class="state-text" x="354" y="893">等待资源</text>
+
+  <rect class="state" x="515" y="845" width="150" height="68" rx="13" stroke="#ea580c"/>
+  <text class="state-title" x="548" y="871">SCHEDULED</text>
+  <text class="state-text" x="543" y="893">已有候选资源</text>
+
+  <rect class="state" x="705" y="845" width="155" height="68" rx="13" stroke="#ea580c"/>
+  <text class="state-title" x="730" y="871">WAIT_LEASE</text>
+  <text class="state-text" x="728" y="893">等待租约生效</text>
+
+  <rect class="state" x="900" y="845" width="135" height="68" rx="13" stroke="#ea580c"/>
+  <text class="state-title" x="932" y="871">RUNNING</text>
+  <text class="state-text" x="925" y="893">执行中</text>
+
+  <rect class="state" x="1080" y="802" width="165" height="68" rx="13" stroke="#0ea5e9"/>
+  <text class="state-title" x="1106" y="828">CHECKPOINTING</text>
+  <text class="state-text" x="1104" y="850">保存现场 / 进度</text>
+
+  <rect class="state" x="1080" y="900" width="165" height="68" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="1124" y="926">DRAINING</text>
+  <text class="state-text" x="1108" y="948">跑到安全退出点</text>
+
+  <rect class="state" x="1290" y="845" width="150" height="68" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="1322" y="871">INTERRUPTED</text>
+  <text class="state-text" x="1320" y="893">已中断待处理</text>
+
+  <rect class="state" x="1485" y="802" width="150" height="68" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1518" y="828">RESUMABLE</text>
+  <text class="state-text" x="1510" y="850">可恢复 / 迁移</text>
+
+  <rect class="state" x="1485" y="900" width="150" height="68" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="1530" y="926">ABORTED</text>
+  <text class="state-text" x="1505" y="948">不可安全恢复</text>
+
+  <rect class="state" x="900" y="1002" width="135" height="58" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="934" y="1027">PASSED</text>
+  <text class="state-text" x="922" y="1048">正常完成</text>
+
+  <rect class="state" x="1080" y="1002" width="135" height="58" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="1118" y="1027">FAILED</text>
+  <text class="state-text" x="1102" y="1048">执行失败</text>
+
+  <path class="arrow" d="M 475 879 L 510 879"/>
+  <path class="arrow" d="M 665 879 L 700 879"/>
+  <path class="arrow" d="M 860 879 L 895 879"/>
+  <path class="arrow-soft" d="M 1035 864 C 1060 845 1062 840 1075 836"/>
+  <path class="arrow-soft" d="M 1035 894 C 1060 920 1062 928 1075 934"/>
+  <path class="arrow" d="M 1245 836 C 1268 845 1275 855 1285 866"/>
+  <path class="arrow" d="M 1245 934 C 1268 920 1275 895 1285 885"/>
+  <path class="arrow" d="M 1440 866 C 1460 845 1470 838 1480 836"/>
+  <path class="arrow-soft" d="M 1440 890 C 1460 920 1470 928 1480 934"/>
+  <path class="arrow" d="M 967 913 L 967 997"/>
+  <path class="arrow-soft" d="M 1035 894 C 1060 980 1070 1020 1075 1031"/>
+  <path class="arrow-soft" d="M 1560 802 C 1550 760 820 770 782 840"/>
+  <text class="label" x="1090" y="785">抢占前优先 checkpoint</text>
+  <text class="label" x="1090" y="990">无法 checkpoint 时只允许 drain 或人工确认</text>
+
+  <!-- Footer notes -->
+  <text class="note" x="80" y="1150">状态机约束：FPGA / EMU 同一 ResourceUnit 任意时刻只能有一个 ACTIVE lease；抢占不会直接覆盖现场，必须经过 drain、checkpoint 或审批。</text>
+  <text class="note" x="80" y="1175">昼夜策略不是硬编码：按项目时区、工作日历、里程碑窗口配置；P0 紧急问题、预约资源、人工审批可以覆盖默认策略。</text>
+</svg>

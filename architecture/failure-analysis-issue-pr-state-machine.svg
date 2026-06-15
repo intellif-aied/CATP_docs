@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1210" viewBox="0 0 1800 1210" role="img" aria-labelledby="title desc">
+  <title id="title">Failure Issue 与 Fix PR 状态机</title>
+  <desc id="desc">失败 Issue 生命周期、Fix/Verification PR 生命周期和二者之间的关闭门禁状态机。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .lane { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .head { fill: #0f172a; }
+      .head-title { font: 700 22px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .head-sub { font: 400 14px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.86); }
+      .state { fill: #ffffff; stroke-width: 1.4; }
+      .state-title { font: 700 15px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .state-text { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .arrow { stroke: #475569; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 7 7; }
+      .label { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .note { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1800" height="1210"/>
+  <text class="title" x="70" y="58">Failure Issue 与 Fix PR 状态机</text>
+  <text class="subtitle" x="70" y="90">Issue 跟踪失败归因与 owner，PR/Validation 跟踪修复与验证；关闭 Issue 必须满足证据门禁。</text>
+
+  <!-- Issue state -->
+  <rect class="lane" x="55" y="130" width="1690" height="300" rx="22" stroke="#16a34a"/>
+  <rect class="head" x="82" y="156" width="230" height="76" rx="18" fill="#15803d"/>
+  <text class="head-title" x="106" y="187">Failure Issue</text>
+  <text class="head-sub" x="106" y="211">失败跟踪生命周期</text>
+
+  <rect class="state" x="350" y="172" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="388" y="198">OPEN</text>
+  <text class="state-text" x="375" y="220">由失败生成</text>
+
+  <rect class="state" x="535" y="172" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="568" y="198">TRIAGING</text>
+  <text class="state-text" x="556" y="220">归因/去重/分级</text>
+
+  <rect class="state" x="720" y="172" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="758" y="198">ASSIGNED</text>
+  <text class="state-text" x="748" y="220">owner 已确认</text>
+
+  <rect class="state" x="905" y="172" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="938" y="198">ANALYZING</text>
+  <text class="state-text" x="930" y="220">复现/定位中</text>
+
+  <rect class="state" x="1090" y="132" width="155" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="1123" y="158">FIX_READY</text>
+  <text class="state-text" x="1118" y="180">已关联修复 PR</text>
+
+  <rect class="state" x="1090" y="252" width="155" height="66" rx="13" stroke="#0ea5e9"/>
+  <text class="state-title" x="1128" y="278">VERIFYING</text>
+  <text class="state-text" x="1114" y="300">验证请求执行中</text>
+
+  <rect class="state" x="1290" y="172" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1327" y="198">RESOLVED</text>
+  <text class="state-text" x="1310" y="220">验证通过待关闭</text>
+
+  <rect class="state" x="1480" y="172" width="145" height="66" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="1525" y="198">CLOSED</text>
+  <text class="state-text" x="1506" y="220">关闭并保留证据</text>
+
+  <rect class="state" x="1290" y="280" width="145" height="66" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="1324" y="306">DUPLICATE</text>
+  <text class="state-text" x="1318" y="328">并入主 Issue</text>
+
+  <rect class="state" x="1480" y="280" width="145" height="66" rx="13" stroke="#7c3aed"/>
+  <text class="state-title" x="1518" y="306">WAIVED</text>
+  <text class="state-text" x="1505" y="328">风险接受/豁免</text>
+
+  <path class="arrow" d="M 495 205 L 530 205"/>
+  <path class="arrow" d="M 680 205 L 715 205"/>
+  <path class="arrow" d="M 865 205 L 900 205"/>
+  <path class="arrow" d="M 1050 190 C 1070 170 1075 166 1085 165"/>
+  <path class="arrow" d="M 1245 165 C 1270 180 1278 195 1285 205"/>
+  <path class="arrow" d="M 1435 205 L 1475 205"/>
+  <path class="arrow-soft" d="M 1050 220 C 1070 260 1075 280 1085 285"/>
+  <path class="arrow-soft" d="M 1245 285 C 1270 255 1278 230 1285 220"/>
+  <path class="arrow-soft" d="M 680 220 C 850 360 1160 360 1285 313"/>
+  <path class="arrow-soft" d="M 1435 313 L 1475 313"/>
+  <text class="label" x="1105" y="112">PR linked</text>
+  <text class="label" x="1095" y="345">validation checks</text>
+
+  <!-- PR state -->
+  <rect class="lane" x="55" y="470" width="1690" height="300" rx="22" stroke="#f97316"/>
+  <rect class="head" x="82" y="496" width="260" height="76" rx="18" fill="#c2410c"/>
+  <text class="head-title" x="106" y="527">Fix / Validation PR</text>
+  <text class="head-sub" x="106" y="551">修复与验证生命周期</text>
+
+  <rect class="state" x="370" y="512" width="145" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="406" y="538">DRAFT</text>
+  <text class="state-text" x="396" y="560">修复或验证草稿</text>
+
+  <rect class="state" x="555" y="512" width="145" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="590" y="538">OPEN</text>
+  <text class="state-text" x="580" y="560">等待 review/check</text>
+
+  <rect class="state" x="740" y="512" width="145" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="768" y="538">REVIEWING</text>
+  <text class="state-text" x="770" y="560">owner review</text>
+
+  <rect class="state" x="925" y="512" width="145" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="955" y="538">CHECKING</text>
+  <text class="state-text" x="950" y="560">CI/回归验证</text>
+
+  <rect class="state" x="1110" y="512" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1148" y="538">APPROVED</text>
+  <text class="state-text" x="1140" y="560">review + checks</text>
+
+  <rect class="state" x="1295" y="512" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1340" y="538">MERGED</text>
+  <text class="state-text" x="1320" y="560">修复合入/验证完成</text>
+
+  <rect class="state" x="1480" y="512" width="145" height="66" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="1525" y="538">CLOSED</text>
+  <text class="state-text" x="1504" y="560">无合入/废弃</text>
+
+  <rect class="state" x="925" y="620" width="145" height="66" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="968" y="646">FAILED</text>
+  <text class="state-text" x="946" y="668">checks 未通过</text>
+
+  <path class="arrow" d="M 515 545 L 550 545"/>
+  <path class="arrow" d="M 700 545 L 735 545"/>
+  <path class="arrow" d="M 885 545 L 920 545"/>
+  <path class="arrow" d="M 1070 545 L 1105 545"/>
+  <path class="arrow" d="M 1255 545 L 1290 545"/>
+  <path class="arrow" d="M 1440 545 L 1475 545"/>
+  <path class="arrow-soft" d="M 998 578 L 998 615"/>
+  <path class="arrow-soft" d="M 1070 653 C 1160 710 1400 700 1475 565"/>
+  <path class="arrow-soft" d="M 1367 512 C 1367 430 1365 300 1365 244"/>
+  <text class="label" x="930" y="705">失败验证结果回写 Issue，Issue 回到 ANALYZING/FIX_READY</text>
+
+  <!-- Close gate -->
+  <rect class="lane" x="55" y="810" width="1690" height="270" rx="22" stroke="#7c3aed"/>
+  <rect class="head" x="82" y="836" width="245" height="76" rx="18" fill="#6d28d9"/>
+  <text class="head-title" x="106" y="867">关闭门禁</text>
+  <text class="head-sub" x="106" y="891">Close criteria</text>
+
+  <rect class="state" x="370" y="855" width="180" height="76" rx="13" stroke="#7c3aed"/>
+  <text class="state-title" x="395" y="884">Evidence Ready</text>
+  <text class="state-text" x="395" y="906">日志、trace、复现、归因</text>
+
+  <rect class="state" x="600" y="855" width="180" height="76" rx="13" stroke="#7c3aed"/>
+  <text class="state-title" x="628" y="884">Required Checks</text>
+  <text class="state-text" x="628" y="906">QEMU/EMU/FPGA pass</text>
+
+  <rect class="state" x="830" y="855" width="180" height="76" rx="13" stroke="#7c3aed"/>
+  <text class="state-title" x="858" y="884">Owner Approval</text>
+  <text class="state-text" x="858" y="906">owner / platform owner</text>
+
+  <rect class="state" x="1060" y="855" width="180" height="76" rx="13" stroke="#7c3aed"/>
+  <text class="state-title" x="1085" y="884">Risk Accepted</text>
+  <text class="state-text" x="1085" y="906">waive 需要审批</text>
+
+  <rect class="state" x="1290" y="855" width="180" height="76" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1322" y="884">Close Allowed</text>
+  <text class="state-text" x="1322" y="906">自动或人工关闭</text>
+
+  <rect class="state" x="830" y="965" width="180" height="76" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="860" y="994">Close Blocked</text>
+  <text class="state-text" x="858" y="1016">证据或 checks 不足</text>
+
+  <path class="arrow" d="M 550 893 L 595 893"/>
+  <path class="arrow" d="M 780 893 L 825 893"/>
+  <path class="arrow" d="M 1010 893 L 1055 893"/>
+  <path class="arrow" d="M 1240 893 L 1285 893"/>
+  <path class="arrow-soft" d="M 690 931 C 730 1000 780 1005 825 1003"/>
+  <path class="arrow-soft" d="M 920 931 L 920 960"/>
+  <path class="arrow-soft" d="M 1380 855 C 1440 690 1495 440 1550 244"/>
+
+  <text class="note" x="70" y="1145">Issue 关闭方式：fixed、duplicate、known_issue、not_reproducible、waived、obsolete。除 duplicate 外都需要证据；waived 需要风险接受审批。</text>
+  <text class="note" x="70" y="1172">PR/checks 失败不会关闭 Issue，而是把 Issue 拉回分析或修复状态，并在 timeline 留下失败证据。</text>
+</svg>

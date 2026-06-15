@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1260" viewBox="0 0 1800 1260" role="img" aria-labelledby="title desc">
+  <title id="title">用例失败分析 Issue/PR 闭环架构</title>
+  <desc id="desc">借鉴 GitHub Issue 和 Pull Request 的失败分析闭环：Fail Snapshot、Failure Issue、Fix/Validation PR、自动化 Agent、复跑验证和关闭规则。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .section { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .head { fill: #0f172a; }
+      .head-title { font: 700 21px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .head-sub { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.86); }
+      .card { fill: #ffffff; stroke-width: 1.25; }
+      .card-title { font: 700 16px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .card-text { font: 400 12.5px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .pill { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .arrow { stroke: #475569; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 8 7; }
+      .label { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .note { font: 400 12.5px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1800" height="1260"/>
+  <text class="title" x="70" y="58">用例失败分析 Issue/PR 闭环架构</text>
+  <text class="subtitle" x="70" y="90">参考 GitHub：失败归档为 Issue，修复和验证通过 PR/Verification Request 闭环；labels、owner、milestone、timeline、checks 都是一等对象。</text>
+
+  <!-- Failure source -->
+  <rect class="section" x="55" y="130" width="345" height="860" rx="22" stroke="#6366f1"/>
+  <rect class="head" x="82" y="156" width="210" height="72" rx="18" fill="#4f46e5"/>
+  <text class="head-title" x="106" y="187">失败输入</text>
+  <text class="head-sub" x="106" y="211">Fail Snapshot</text>
+
+  <rect class="card" x="90" y="260" width="265" height="100" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="291">平台执行失败</text>
+  <text class="card-text" x="116" y="318">QEMU / EMU / FPGA 节点 FAILED</text>
+  <text class="card-text" x="116" y="340">包含 case、platform、resource、version</text>
+
+  <rect class="card" x="90" y="388" width="265" height="112" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="419">Fail Snapshot</text>
+  <text class="card-text" x="116" y="446">result.json、case.log、trace、dump</text>
+  <text class="card-text" x="116" y="469">expected / actual / checkpoint</text>
+  <text class="card-text" x="116" y="492">最小复现命令和现场 artifact</text>
+
+  <rect class="card" x="90" y="528" width="265" height="112" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="559">失败事件</text>
+  <text class="card-text" x="116" y="586">execution.node.failed</text>
+  <text class="card-text" x="116" y="609">case.final.failed</text>
+  <text class="card-text" x="116" y="632">resource.infra_failed</text>
+
+  <rect class="card" x="90" y="668" width="265" height="112" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="699">失败聚类输入</text>
+  <text class="card-text" x="116" y="726">相同签名、相同日志模式</text>
+  <text class="card-text" x="116" y="749">同版本、同平台、同模块</text>
+  <text class="card-text" x="116" y="772">用于 duplicate / related 判断</text>
+
+  <rect class="card" x="90" y="808" width="265" height="100" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="839">Issue 候选</text>
+  <text class="card-text" x="116" y="866">新建、追加到已有 Issue</text>
+  <text class="card-text" x="116" y="888">或标记 known issue / duplicate</text>
+
+  <!-- Analysis agents -->
+  <rect class="section" x="435" y="130" width="405" height="860" rx="22" stroke="#0891b2"/>
+  <rect class="head" x="462" y="156" width="225" height="72" rx="18" fill="#0e7490"/>
+  <text class="head-title" x="486" y="187">失败分析 Agent</text>
+  <text class="head-sub" x="486" y="211">Triage / Dedupe / Owner</text>
+
+  <rect class="card" x="470" y="260" width="315" height="84" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="497" y="291">Triage Agent</text>
+  <text class="card-text" x="497" y="318">失败摘要、初步归因、置信度、严重级别</text>
+
+  <rect class="card" x="470" y="368" width="315" height="84" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="497" y="399">Duplicate / Cluster Agent</text>
+  <text class="card-text" x="497" y="426">查找相同签名、相似日志、历史失败</text>
+
+  <rect class="card" x="470" y="476" width="315" height="84" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="497" y="507">Owner Routing Agent</text>
+  <text class="card-text" x="497" y="534">按模块、栈、平台、归因推荐 owner</text>
+
+  <rect class="card" x="470" y="584" width="315" height="84" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="497" y="615">Repro Plan Agent</text>
+  <text class="card-text" x="497" y="642">生成复跑、跨平台复现、最小复现方案</text>
+
+  <rect class="card" x="470" y="692" width="315" height="84" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="497" y="723">Fix Verification Agent</text>
+  <text class="card-text" x="497" y="750">根据 PR / patch 生成验证计划和 checks</text>
+
+  <rect class="card" x="470" y="800" width="315" height="84" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="497" y="831">Report Agent</text>
+  <text class="card-text" x="497" y="858">把 Issue 状态汇总到日报、里程碑、风险 Top</text>
+
+  <!-- Failure issue -->
+  <rect class="section" x="875" y="130" width="430" height="860" rx="22" stroke="#16a34a"/>
+  <rect class="head" x="902" y="156" width="230" height="72" rx="18" fill="#15803d"/>
+  <text class="head-title" x="926" y="187">Failure Issue</text>
+  <text class="head-sub" x="926" y="211">像 GitHub Issue 管理失败</text>
+
+  <rect class="card" x="910" y="260" width="335" height="96" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="937" y="291">Issue Header</text>
+  <text class="card-text" x="937" y="318">标题、状态、severity、priority、owner</text>
+  <text class="card-text" x="937" y="340">milestone、labels、linked cases</text>
+
+  <rect class="card" x="910" y="380" width="335" height="96" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="937" y="411">Labels / Classification</text>
+  <text class="card-text" x="937" y="438">software / platform / design / model / case</text>
+  <text class="card-text" x="937" y="460">infra / flaky / known_issue / tapeout-risk</text>
+
+  <rect class="card" x="910" y="500" width="335" height="96" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="937" y="531">Timeline</text>
+  <text class="card-text" x="937" y="558">评论、状态变化、复跑结果、owner 变更</text>
+  <text class="card-text" x="937" y="580">Agent 结论、人工 override、外部链接</text>
+
+  <rect class="card" x="910" y="620" width="335" height="96" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="937" y="651">Relations</text>
+  <text class="card-text" x="937" y="678">duplicate、related、blocks、blocked_by</text>
+  <text class="card-text" x="937" y="700">linked PR、linked validation request</text>
+
+  <rect class="card" x="910" y="740" width="335" height="96" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="937" y="771">Close Criteria</text>
+  <text class="card-text" x="937" y="798">修复 PR merge + 验证 checks pass</text>
+  <text class="card-text" x="937" y="820">或 duplicate / known issue / waived</text>
+
+  <!-- PR / verification -->
+  <rect class="section" x="1340" y="130" width="405" height="860" rx="22" stroke="#f97316"/>
+  <rect class="head" x="1367" y="156" width="260" height="72" rx="18" fill="#c2410c"/>
+  <text class="head-title" x="1391" y="187">Fix / Verification PR</text>
+  <text class="head-sub" x="1391" y="211">像 PR 管理修复和验证</text>
+
+  <rect class="card" x="1375" y="260" width="315" height="96" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1402" y="291">Fix PR / Patch</text>
+  <text class="card-text" x="1402" y="318">关联代码 PR、patch、workaround</text>
+  <text class="card-text" x="1402" y="340">commit、reviewer、影响模块</text>
+
+  <rect class="card" x="1375" y="380" width="315" height="96" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1402" y="411">Validation Request</text>
+  <text class="card-text" x="1402" y="438">复跑哪些 case、哪些平台、哪个版本矩阵</text>
+  <text class="card-text" x="1402" y="460">QEMU/EMU/FPGA checks</text>
+
+  <rect class="card" x="1375" y="500" width="315" height="96" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1402" y="531">Checks</text>
+  <text class="card-text" x="1402" y="558">build、unit、QEMU precheck、EMU repro</text>
+  <text class="card-text" x="1402" y="580">FPGA final、long stress、regression slice</text>
+
+  <rect class="card" x="1375" y="620" width="315" height="96" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1402" y="651">Review / Approval</text>
+  <text class="card-text" x="1402" y="678">owner review、platform owner review</text>
+  <text class="card-text" x="1402" y="700">waive / risk accept 需要审批</text>
+
+  <rect class="card" x="1375" y="740" width="315" height="96" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1402" y="771">Merge / Close Gate</text>
+  <text class="card-text" x="1402" y="798">所有 required checks pass 才能 close</text>
+  <text class="card-text" x="1402" y="820">关闭后发布 issue.closed / fix.verified</text>
+
+  <!-- Bottom visualization -->
+  <rect class="section" x="55" y="1035" width="1690" height="135" rx="22" stroke="#7c3aed"/>
+  <rect class="head" x="82" y="1058" width="240" height="88" rx="18" fill="#6d28d9"/>
+  <text class="head-title" x="106" y="1093">可视化工作台</text>
+  <text class="head-sub" x="106" y="1118">Board / Issue / PR / Risk</text>
+
+  <rect class="card" x="360" y="1058" width="250" height="88" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="387" y="1089">Failure Board</text>
+  <text class="card-text" x="387" y="1116">Open、Triaging、Assigned、Fixing、Verifying</text>
+
+  <rect class="card" x="640" y="1058" width="250" height="88" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="667" y="1089">Issue Detail</text>
+  <text class="card-text" x="667" y="1116">证据、timeline、labels、owner、关联 PR</text>
+
+  <rect class="card" x="920" y="1058" width="250" height="88" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="947" y="1089">Verification Matrix</text>
+  <text class="card-text" x="947" y="1116">QEMU / EMU / FPGA checks 与 required gate</text>
+
+  <rect class="card" x="1200" y="1058" width="250" height="88" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="1227" y="1089">Risk Dashboard</text>
+  <text class="card-text" x="1227" y="1116">Top 风险、持续失败、阻塞里程碑</text>
+
+  <rect class="card" x="1480" y="1058" width="220" height="88" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="1507" y="1089">Automation Trace</text>
+  <text class="card-text" x="1507" y="1116">Agent 触发、工具调用、决策理由</text>
+
+  <!-- Arrows -->
+  <path class="arrow" d="M 355 310 C 400 310 420 310 465 302"/>
+  <path class="arrow" d="M 355 584 C 400 584 420 584 465 410"/>
+  <path class="arrow" d="M 785 302 C 835 302 850 302 905 308"/>
+  <path class="arrow" d="M 785 410 C 835 420 850 420 905 428"/>
+  <path class="arrow" d="M 785 518 C 835 530 850 530 905 548"/>
+  <path class="arrow" d="M 1245 668 C 1290 668 1310 668 1370 428"/>
+  <path class="arrow" d="M 1245 788 C 1290 788 1310 788 1370 788"/>
+  <path class="arrow-soft" d="M 1532 836 C 1532 960 1078 980 1078 836"/>
+  <path class="arrow-soft" d="M 1532 836 C 1532 1015 610 1020 610 760"/>
+
+  <text class="label" x="1265" y="640">linked PR / validation</text>
+  <text class="label" x="1500" y="965">验证结果回写 Issue timeline</text>
+  <text class="note" x="70" y="1210">核心思想：执行失败形成 Issue，修复和验证形成 PR/checks，关闭 Issue 必须有证据；重复、已知问题、风险接受也要有明确状态和审批。</text>
+</svg>

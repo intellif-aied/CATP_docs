@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1240" viewBox="0 0 1800 1240" role="img" aria-labelledby="title desc">
+  <title id="title">用例执行编排二级架构</title>
+  <desc id="desc">用例执行编排模块支持人工平台标注、用例层级和依赖、QEMU 预筛、EMU/FPGA 稀缺资源验证、失败阻断和跨平台结果归因。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .section { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .head { fill: #0f172a; }
+      .head-title { font: 700 21px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .head-sub { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.86); }
+      .card { fill: #ffffff; stroke-width: 1.25; }
+      .card-title { font: 700 16px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .card-text { font: 400 12.5px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .pill { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .arrow { stroke: #475569; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 8 7; }
+      .label { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .note { font: 400 12.5px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1800" height="1240"/>
+  <text class="title" x="70" y="58">用例执行编排二级架构</text>
+  <text class="subtitle" x="70" y="90">不是所有用例走同一路径：由人标注平台适配和依赖关系，系统按 DAG、预筛和失败阻断策略选择 QEMU / EMU / FPGA 执行。</text>
+
+  <!-- Input and annotation -->
+  <rect class="section" x="55" y="130" width="370" height="870" rx="22" stroke="#6366f1"/>
+  <rect class="head" x="82" y="156" width="210" height="72" rx="18" fill="#4f46e5"/>
+  <text class="head-title" x="106" y="187">用例建模入口</text>
+  <text class="head-sub" x="106" y="211">人标注 + 元数据</text>
+
+  <rect class="card" x="90" y="260" width="285" height="100" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="291">用例库</text>
+  <text class="card-text" x="116" y="318">case_id、模块、owner、风险等级</text>
+  <text class="card-text" x="116" y="340">预计耗时、脚本、参数、版本</text>
+
+  <rect class="card" x="90" y="385" width="285" height="118" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="416">平台适配人工标注</text>
+  <text class="card-text" x="116" y="443">QEMU+A/C model：可跑 / 预筛 / 不支持</text>
+  <text class="card-text" x="116" y="466">EMU / FPGA：必跑 / 选跑 / 不适用</text>
+  <text class="card-text" x="116" y="489">标注人、原因、证据、有效版本</text>
+
+  <rect class="card" x="90" y="528" width="285" height="118" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="559">用例层级与依赖</text>
+  <text class="card-text" x="116" y="586">Foundation / Common / EMU enhanced</text>
+  <text class="card-text" x="116" y="609">FPGA enhanced / Scenario</text>
+  <text class="card-text" x="116" y="632">依赖边：blocking / soft / evidence</text>
+
+  <rect class="card" x="90" y="671" width="285" height="118" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="702">失败阻断策略</text>
+  <text class="card-text" x="116" y="729">基础用例失败：阻断下游</text>
+  <text class="card-text" x="116" y="752">QEMU 预筛失败：跳过 FPGA/EMU</text>
+  <text class="card-text" x="116" y="775">高风险链路：需要人工确认</text>
+
+  <rect class="card" x="90" y="814" width="285" height="100" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="116" y="845">执行意图</text>
+  <text class="card-text" x="116" y="872">smoke / full / incremental / debug</text>
+  <text class="card-text" x="116" y="894">里程碑、PR、夜间计划触发</text>
+
+  <!-- Planner -->
+  <rect class="section" x="465" y="130" width="500" height="870" rx="22" stroke="#16a34a"/>
+  <rect class="head" x="492" y="156" width="240" height="72" rx="18" fill="#15803d"/>
+  <text class="head-title" x="516" y="187">执行编排核心</text>
+  <text class="head-sub" x="516" y="211">DAG / Route / Gate</text>
+
+  <rect class="card" x="505" y="260" width="390" height="90" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="532" y="291">Platform Route Resolver</text>
+  <text class="card-text" x="532" y="318">优先使用人工平台标注，规则/Agent 只给建议</text>
+  <text class="card-text" x="532" y="340">生成 QEMU→EMU→FPGA / QEMU→EMU / QEMU→FPGA / EMU-only / FPGA-only</text>
+
+  <rect class="card" x="505" y="375" width="390" height="90" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="532" y="406">Execution DAG Builder</text>
+  <text class="card-text" x="532" y="433">按用例依赖、层级、平台路线构建 DAG</text>
+  <text class="card-text" x="532" y="455">基础用例 gate 控制上层用例是否继续</text>
+
+  <rect class="card" x="505" y="490" width="390" height="90" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="532" y="521">Precheck &amp; Gate Engine</text>
+  <text class="card-text" x="532" y="548">QEMU 预筛失败时，可跳过 FPGA/EMU</text>
+  <text class="card-text" x="532" y="570">基础 gate fail 时，后续节点标记 blocked/skipped</text>
+
+  <rect class="card" x="505" y="605" width="390" height="90" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="532" y="636">Platform Scheduler</text>
+  <text class="card-text" x="532" y="663">QEMU/CPU 快速预筛，EMU/FPGA 走资源租约</text>
+  <text class="card-text" x="532" y="685">结合优先级、资源状态、夜间计划和人工预约</text>
+
+  <rect class="card" x="505" y="720" width="390" height="90" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="532" y="751">Result Merger</text>
+  <text class="card-text" x="532" y="778">同一用例多平台结果合并</text>
+  <text class="card-text" x="532" y="800">标明结论来自 QEMU / EMU / FPGA 哪个平台</text>
+
+  <rect class="card" x="505" y="835" width="390" height="90" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="532" y="866">Explain Recorder</text>
+  <text class="card-text" x="532" y="893">为什么选这个平台，为什么跳过后续</text>
+  <text class="card-text" x="532" y="915">人工标注、规则命中、执行证据全留痕</text>
+
+  <!-- Platform execution lanes -->
+  <rect class="section" x="1005" y="130" width="740" height="870" rx="22" stroke="#f97316"/>
+  <rect class="head" x="1032" y="156" width="250" height="72" rx="18" fill="#c2410c"/>
+  <text class="head-title" x="1056" y="187">平台执行路径</text>
+  <text class="head-sub" x="1056" y="211">QEMU / EMU / FPGA</text>
+
+  <rect x="1045" y="260" width="210" height="56" rx="18" fill="#0ea5e9"/>
+  <text class="pill" x="1096" y="293">QEMU + Model</text>
+  <rect x="1290" y="260" width="170" height="56" rx="18" fill="#2563eb"/>
+  <text class="pill" x="1345" y="293">EMU</text>
+  <rect x="1495" y="260" width="170" height="56" rx="18" fill="#16a34a"/>
+  <text class="pill" x="1542" y="293">FPGA</text>
+
+  <rect class="card" x="1045" y="350" width="210" height="122" rx="14" stroke="#0ea5e9"/>
+  <text class="card-title" x="1072" y="380">预筛 / 快速定位</text>
+  <text class="card-text" x="1072" y="407">基础 API、参数、寄存器</text>
+  <text class="card-text" x="1072" y="430">功能预筛、CI、冒烟</text>
+  <text class="card-text" x="1072" y="453">fail 可阻断后续平台</text>
+
+  <rect class="card" x="1290" y="350" width="170" height="122" rx="14" stroke="#2563eb"/>
+  <text class="card-title" x="1317" y="380">复杂交互</text>
+  <text class="card-text" x="1317" y="407">trace / dump</text>
+  <text class="card-text" x="1317" y="430">复杂状态</text>
+  <text class="card-text" x="1317" y="453">可观测定位</text>
+
+  <rect class="card" x="1495" y="350" width="170" height="122" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="1522" y="380">真实硬件</text>
+  <text class="card-text" x="1522" y="407">板卡、外设、IO</text>
+  <text class="card-text" x="1522" y="430">长稳、性能趋势</text>
+  <text class="card-text" x="1522" y="453">最终闭环</text>
+
+  <path class="arrow" d="M 1258 410 L 1285 410"/>
+  <path class="arrow" d="M 1462 410 L 1490 410"/>
+  <text class="label" x="1120" y="520">主路线 A：QEMU → EMU → FPGA</text>
+
+  <rect class="card" x="1045" y="555" width="620" height="70" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1072" y="584">路线 B：QEMU → EMU</text>
+  <text class="card-text" x="1072" y="607">适合依赖复杂内部状态、需要可观测性，但不强依赖真实板卡外设的用例。</text>
+
+  <rect class="card" x="1045" y="645" width="620" height="70" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1072" y="674">路线 C：QEMU → FPGA</text>
+  <text class="card-text" x="1072" y="697">适合 QEMU 可完成软件预筛，但最终必须在真实板卡/外设/长稳环境验证的用例。</text>
+
+  <rect class="card" x="1045" y="735" width="620" height="90" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1072" y="764">特殊路线：EMU-only / FPGA-only</text>
+  <text class="card-text" x="1072" y="787">QEMU+A/C model 不支持的硬件特性，由人标注直接进入 EMU 或 FPGA。</text>
+  <text class="card-text" x="1072" y="810">这些路线仍然要经过资源租约、优先级和失败结果合并。</text>
+
+  <rect class="card" x="1045" y="845" width="620" height="80" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1072" y="874">跳过规则</text>
+  <text class="card-text" x="1072" y="897">如果 QEMU 作为 precheck 失败，且失败不是模型不支持，则后续 EMU/FPGA 节点 skip。</text>
+
+  <!-- Bottom visualization and governance -->
+  <rect class="section" x="55" y="1035" width="1690" height="130" rx="22" stroke="#7c3aed"/>
+  <rect class="head" x="82" y="1058" width="235" height="84" rx="18" fill="#6d28d9"/>
+  <text class="head-title" x="106" y="1092">可视化与治理</text>
+  <text class="head-sub" x="106" y="1116">Mapping / DAG / Result</text>
+
+  <rect class="card" x="355" y="1058" width="280" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="382" y="1088">平台映射矩阵</text>
+  <text class="card-text" x="382" y="1115">每个用例由人标注 QEMU / EMU / FPGA 归属</text>
+
+  <rect class="card" x="665" y="1058" width="280" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="692" y="1088">执行 DAG 视图</text>
+  <text class="card-text" x="692" y="1115">看顺序、依赖、阻断、跳过和待人工确认节点</text>
+
+  <rect class="card" x="975" y="1058" width="280" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="1002" y="1088">跨平台结果矩阵</text>
+  <text class="card-text" x="1002" y="1115">明确结论来自 QEMU、EMU 还是 FPGA</text>
+
+  <rect class="card" x="1285" y="1058" width="280" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="1312" y="1088">人工审核与 override</text>
+  <text class="card-text" x="1312" y="1115">平台标注变更、跳过争议、高风险链路确认</text>
+
+  <!-- Arrows -->
+  <path class="arrow" d="M 375 420 C 430 420 445 420 500 305"/>
+  <path class="arrow" d="M 375 585 C 430 585 445 585 500 420"/>
+  <path class="arrow" d="M 375 730 C 430 730 445 730 500 535"/>
+  <path class="arrow" d="M 895 305 C 950 305 970 305 1040 410"/>
+  <path class="arrow" d="M 895 535 C 950 535 970 535 1040 595"/>
+  <path class="arrow" d="M 895 650 C 950 650 970 650 1040 680"/>
+  <path class="arrow-soft" d="M 1150 472 C 1140 500 1130 515 1120 545"/>
+  <path class="arrow-soft" d="M 1150 472 C 1210 740 1400 800 1505 835"/>
+
+  <text class="note" x="70" y="1200">核心目标：给每个软件用例选择最合适的验证路径，并明确哪些结论来自模型、哪些来自 EMU、哪些来自 FPGA；不是让所有用例都走同一路径。</text>
+</svg>

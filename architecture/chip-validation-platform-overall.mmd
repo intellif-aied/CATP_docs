@@ -1,0 +1,139 @@
+flowchart TB
+  %% Chip software validation automation platform - overall architecture
+
+  U["用户角色<br/>验证负责人 / 领域 Owner / 资源管理员 / Agent 开发者 / 项目干系人"]
+
+  subgraph P["统一验证平台入口"]
+    UI["Web Console<br/>作战看板 / 列表 / 详情 / 可视化编排"]
+    API["Platform API<br/>权限 / 查询 / 操作 / OpenAPI"]
+    NOTIFY["通知中心<br/>日报 / 周报 / 风险提醒 / 人工审批"]
+  end
+
+  subgraph B["验证业务管理域"]
+    REQ["需求管理<br/>需求拆解 / 变更影响 / 准入追踪"]
+    CASE["用例管理<br/>用例库 / 平台适配 / 版本 / 覆盖关系"]
+    RES["资源管理<br/>EMU / FPGA / CPU / QEMU / 模型资源"]
+    MS["里程碑管理<br/>投片准入 / 阶段门 / 完成度"]
+    PLAN["执行计划管理<br/>回归计划 / 夜间计划 / 增量计划"]
+    TASK["执行任务管理<br/>排队 / 调度 / 执行 / 复跑 / 迁移"]
+    ISSUE["Issue 管理<br/>失败归因 / 缺陷闭环 / 风险 Top"]
+    PR["PR 管理<br/>代码变更 / 评审 / CI / 修复验证"]
+  end
+
+  subgraph E["事件驱动自动化引擎"]
+    BUS["事件总线<br/>领域事件 / 外部 Webhook / 资源事件 / Agent 事件"]
+    RULE["规则与策略引擎<br/>准入规则 / 调度策略 / 复跑策略 / 风险策略"]
+    WF["Workflow Orchestrator<br/>DAG / 状态机 / SLA / 补偿流程"]
+    Q["任务队列与锁<br/>优先级队列 / 资源锁 / 幂等 / 去重"]
+  end
+
+  subgraph A["Managed Agent 平台"]
+    REG["Agent Registry<br/>Agent 模板 / 版本 / Owner / 能力声明"]
+    MCP["MCP 管理<br/>Server 注册 / Tool 授权 / 连接健康"]
+    SKILL["Skill 管理<br/>Skill 包 / 参数 / 依赖 / 评审 / 发布"]
+    SUB["Subagent 管理<br/>角色 / 上下文 / 隔离 / 协作拓扑"]
+    RUN["Agent Runtime<br/>会话 / 任务执行 / 沙箱 / 预算 / 超时"]
+    OBS["Agent 可观测<br/>Trace / Prompt / Tool Call / 成本 / 质量评分"]
+    GUARD["治理与安全<br/>权限 / Secret / 审批 / 人工 Override / 审计"]
+  end
+
+  subgraph X["执行资源与适配层"]
+    SCHED["资源调度器<br/>亲和性 / 抢占 / Drain / 预约 / 夜间填充"]
+    ADAPT["执行适配器<br/>EMU Adapter / FPGA Adapter / CPU Farm / QEMU Adapter"]
+    EXEC["执行 Agent<br/>部署 / 运行 / 采集 / 上传 / 断点续跑"]
+    ANALYZE["分析 Agent<br/>日志解析 / 失败聚类 / 归因 / 最小复现"]
+    REPORT["报告 Agent<br/>日报 / 周报 / 里程碑报告 / 资源利用率"]
+  end
+
+  subgraph R["真实执行环境"]
+    EMU["EMU 池"]
+    FPGA["FPGA 池"]
+    CPU["CPU Farm"]
+    QEMU["QEMU + cmodel / amodel"]
+    LAB["日志 / Trace / Dump / 波形环境"]
+  end
+
+  subgraph D["数据与知识底座"]
+    DB["业务元数据 DB<br/>需求 / 用例 / 资源 / 计划 / 任务 / Issue / PR"]
+    RESULT["执行结果库<br/>Result JSON / Checkpoint / Fail Snapshot"]
+    ART["Artifact Store<br/>日志 / Trace / Dump / Report / 复现脚本"]
+    KB["知识库与向量索引<br/>规范 / 历史失败 / 归因样例 / Runbook"]
+    METRIC["指标与审计<br/>资源利用率 / SLA / Agent 行为 / 决策理由"]
+  end
+
+  subgraph EXT["外部系统集成"]
+    GIT["GitLab / GitHub<br/>Repo / PR / Webhook"]
+    CI["CI/CD<br/>Build / Test / Image / Binary"]
+    TRACK["Jira / 禅道 / 飞书任务<br/>Issue / 人工流程"]
+    CHAT["IM / 邮件<br/>通知 / 审批 / 战情同步"]
+  end
+
+  U --> UI
+  UI --> API
+  API --> B
+  API --> A
+  API --> NOTIFY
+
+  B --> BUS
+  EXT --> BUS
+  BUS --> RULE
+  RULE --> WF
+  WF --> Q
+  Q --> RUN
+  Q --> SCHED
+
+  REG --> RUN
+  MCP --> RUN
+  SKILL --> RUN
+  SUB --> RUN
+  RUN --> OBS
+  RUN --> GUARD
+  RUN --> BUS
+
+  SCHED --> ADAPT
+  ADAPT --> EXEC
+  EXEC --> R
+  R --> EXEC
+  EXEC --> RESULT
+  EXEC --> ART
+  EXEC --> BUS
+  ANALYZE --> RESULT
+  ANALYZE --> ART
+  ANALYZE --> KB
+  ANALYZE --> ISSUE
+  REPORT --> RESULT
+  REPORT --> METRIC
+  REPORT --> NOTIFY
+
+  B --> DB
+  B --> RESULT
+  A --> KB
+  A --> METRIC
+  E --> METRIC
+  DB --> RULE
+  RESULT --> RULE
+  KB --> RUN
+  METRIC --> UI
+
+  GIT --> PR
+  CI --> PR
+  TRACK --> ISSUE
+  CHAT --> NOTIFY
+
+  classDef user fill:#f8fafc,stroke:#64748b,color:#0f172a;
+  classDef platform fill:#eff6ff,stroke:#2563eb,color:#172554;
+  classDef business fill:#f0fdf4,stroke:#16a34a,color:#14532d;
+  classDef engine fill:#fff7ed,stroke:#ea580c,color:#7c2d12;
+  classDef agent fill:#f5f3ff,stroke:#7c3aed,color:#2e1065;
+  classDef exec fill:#ecfeff,stroke:#0891b2,color:#164e63;
+  classDef data fill:#fefce8,stroke:#ca8a04,color:#713f12;
+  classDef ext fill:#fdf2f8,stroke:#db2777,color:#831843;
+
+  class U user;
+  class UI,API,NOTIFY platform;
+  class REQ,CASE,RES,MS,PLAN,TASK,ISSUE,PR business;
+  class BUS,RULE,WF,Q engine;
+  class REG,MCP,SKILL,SUB,RUN,OBS,GUARD agent;
+  class SCHED,ADAPT,EXEC,ANALYZE,REPORT,EMU,FPGA,CPU,QEMU,LAB exec;
+  class DB,RESULT,ART,KB,METRIC data;
+  class GIT,CI,TRACK,CHAT ext;

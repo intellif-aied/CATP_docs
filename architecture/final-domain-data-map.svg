@@ -1,0 +1,304 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1320" viewBox="0 0 1800 1320" role="img" aria-labelledby="title desc">
+  <title id="title">芯片软件验证自动化平台核心领域数据关系</title>
+  <desc id="desc">展示需求、用例、执行计划、资源租约、执行结果、失败 Issue、修复验证 PR、事件规则和 AgentRun 之间的核心数据关系。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eff6ff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .domain { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .domain-title { font: 700 18px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .entity { fill: #ffffff; stroke-width: 1.3; }
+      .entity-title { font: 700 15px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .entity-text { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .arrow { stroke: #475569; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 1.7; fill: none; marker-end: url(#arrow); stroke-dasharray: 8 7; }
+      .rel { font: 700 11px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .legend { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" x="0" y="0" width="1800" height="1320"/>
+  <text class="title" x="70" y="58">核心领域数据关系</text>
+  <text class="subtitle" x="70" y="90">这张图抽象最终设计中的主数据对象，用于指导数据库建模、API 边界和跨模块事件关系。</text>
+
+  <!-- Domains -->
+  <rect class="domain" x="60" y="130" width="410" height="420" rx="22" stroke="#6366f1"/>
+  <rect x="86" y="156" width="160" height="46" rx="16" fill="#4f46e5"/>
+  <text class="domain-title" x="112" y="185">业务配置域</text>
+
+  <rect class="domain" x="510" y="130" width="410" height="420" rx="22" stroke="#14b8a6"/>
+  <rect x="536" y="156" width="160" height="46" rx="16" fill="#0f766e"/>
+  <text class="domain-title" x="562" y="185">执行编排域</text>
+
+  <rect class="domain" x="960" y="130" width="360" height="420" rx="22" stroke="#16a34a"/>
+  <rect x="986" y="156" width="160" height="46" rx="16" fill="#15803d"/>
+  <text class="domain-title" x="1012" y="185">资源调度域</text>
+
+  <rect class="domain" x="1360" y="130" width="370" height="420" rx="22" stroke="#0ea5e9"/>
+  <rect x="1386" y="156" width="170" height="46" rx="16" fill="#0284c7"/>
+  <text class="domain-title" x="1412" y="185">自动化编排域</text>
+
+  <rect class="domain" x="60" y="610" width="570" height="500" rx="22" stroke="#f97316"/>
+  <rect x="86" y="636" width="170" height="46" rx="16" fill="#ea580c"/>
+  <text class="domain-title" x="112" y="665">失败闭环域</text>
+
+  <rect class="domain" x="670" y="610" width="470" height="500" rx="22" stroke="#9333ea"/>
+  <rect x="696" y="636" width="170" height="46" rx="16" fill="#7e22ce"/>
+  <text class="domain-title" x="722" y="665">证据与知识域</text>
+
+  <rect class="domain" x="1180" y="610" width="550" height="500" rx="22" stroke="#64748b"/>
+  <rect x="1206" y="636" width="180" height="46" rx="16" fill="#334155"/>
+  <text class="domain-title" x="1232" y="665">展示协同域</text>
+
+  <!-- Business config entities -->
+  <rect class="entity" x="100" y="235" width="155" height="84" rx="13" stroke="#6366f1"/>
+  <text class="entity-title" x="121" y="264">Requirement</text>
+  <text class="entity-text" x="121" y="289">需求、覆盖、准入项</text>
+
+  <rect class="entity" x="285" y="235" width="145" height="84" rx="13" stroke="#6366f1"/>
+  <text class="entity-title" x="306" y="264">TestCase</text>
+  <text class="entity-text" x="306" y="289">用例、owner、风险</text>
+
+  <rect class="entity" x="100" y="360" width="155" height="96" rx="13" stroke="#6366f1"/>
+  <text class="entity-title" x="121" y="389">CaseDependency</text>
+  <text class="entity-text" x="121" y="414">BLOCKING / SOFT</text>
+  <text class="entity-text" x="121" y="437">基础 gate 关系</text>
+
+  <rect class="entity" x="285" y="360" width="145" height="96" rx="13" stroke="#6366f1"/>
+  <text class="entity-title" x="306" y="389">PlatformAnnotation</text>
+  <text class="entity-text" x="306" y="414">QEMU / EMU / FPGA</text>
+  <text class="entity-text" x="306" y="437">人工标注和版本</text>
+
+  <!-- Execution entities -->
+  <rect class="entity" x="550" y="235" width="150" height="84" rx="13" stroke="#14b8a6"/>
+  <text class="entity-title" x="571" y="264">ExecutionPlan</text>
+  <text class="entity-text" x="571" y="289">计划范围和优先级</text>
+
+  <rect class="entity" x="735" y="235" width="145" height="84" rx="13" stroke="#14b8a6"/>
+  <text class="entity-title" x="756" y="264">VersionMatrix</text>
+  <text class="entity-text" x="756" y="289">RTL、FW、脚本版本</text>
+
+  <rect class="entity" x="550" y="360" width="150" height="96" rx="13" stroke="#14b8a6"/>
+  <text class="entity-title" x="571" y="389">ExecutionGraph</text>
+  <text class="entity-text" x="571" y="414">执行 DAG 快照</text>
+  <text class="entity-text" x="571" y="437">不被后续标注漂移</text>
+
+  <rect class="entity" x="735" y="360" width="145" height="96" rx="13" stroke="#14b8a6"/>
+  <text class="entity-title" x="756" y="389">CaseNode</text>
+  <text class="entity-text" x="756" y="414">用例 x 平台节点</text>
+  <text class="entity-text" x="756" y="437">READY / RUN / FAILED</text>
+
+  <rect class="entity" x="640" y="485" width="150" height="84" rx="13" stroke="#14b8a6"/>
+  <text class="entity-title" x="661" y="514">PlatformResult</text>
+  <text class="entity-text" x="661" y="539">结果、artifact、失败类型</text>
+
+  <!-- Resource entities -->
+  <rect class="entity" x="1000" y="235" width="145" height="84" rx="13" stroke="#16a34a"/>
+  <text class="entity-title" x="1021" y="264">ResourceRequest</text>
+  <text class="entity-text" x="1021" y="289">人 / 程序统一请求</text>
+
+  <rect class="entity" x="1160" y="235" width="138" height="84" rx="13" stroke="#16a34a"/>
+  <text class="entity-title" x="1181" y="264">ResourceUnit</text>
+  <text class="entity-text" x="1181" y="289">FPGA / EMU / CPU</text>
+
+  <rect class="entity" x="1000" y="360" width="145" height="96" rx="13" stroke="#16a34a"/>
+  <text class="entity-title" x="1021" y="389">ResourceLease</text>
+  <text class="entity-text" x="1021" y="414">独占、TTL、续约</text>
+  <text class="entity-text" x="1021" y="437">drain / checkpoint</text>
+
+  <rect class="entity" x="1160" y="360" width="138" height="96" rx="13" stroke="#16a34a"/>
+  <text class="entity-title" x="1181" y="389">HealthSnapshot</text>
+  <text class="entity-text" x="1181" y="414">心跳、健康分</text>
+  <text class="entity-text" x="1181" y="437">隔离原因</text>
+
+  <!-- Automation entities -->
+  <rect class="entity" x="1398" y="235" width="135" height="84" rx="13" stroke="#0ea5e9"/>
+  <text class="entity-title" x="1419" y="264">EventRecord</text>
+  <text class="entity-text" x="1419" y="289">事实事件</text>
+
+  <rect class="entity" x="1560" y="235" width="130" height="84" rx="13" stroke="#0ea5e9"/>
+  <text class="entity-title" x="1581" y="264">AutomationRule</text>
+  <text class="entity-text" x="1581" y="289">条件和绑定</text>
+
+  <rect class="entity" x="1398" y="360" width="135" height="96" rx="13" stroke="#0ea5e9"/>
+  <text class="entity-title" x="1419" y="389">RuleActivation</text>
+  <text class="entity-text" x="1419" y="414">一次命中</text>
+  <text class="entity-text" x="1419" y="437">1:1 AgentRun</text>
+
+  <rect class="entity" x="1560" y="360" width="130" height="96" rx="13" stroke="#0ea5e9"/>
+  <text class="entity-title" x="1581" y="389">AgentRun</text>
+  <text class="entity-text" x="1581" y="414">MCP / Skill</text>
+  <text class="entity-text" x="1581" y="437">Subagent / Trace</text>
+
+  <!-- Failure entities -->
+  <rect class="entity" x="100" y="715" width="150" height="96" rx="13" stroke="#f97316"/>
+  <text class="entity-title" x="121" y="744">FailSnapshot</text>
+  <text class="entity-text" x="121" y="769">失败现场</text>
+  <text class="entity-text" x="121" y="792">日志、trace、复现命令</text>
+
+  <rect class="entity" x="285" y="715" width="150" height="96" rx="13" stroke="#f97316"/>
+  <text class="entity-title" x="306" y="744">FailureIssue</text>
+  <text class="entity-text" x="306" y="769">owner、labels、timeline</text>
+  <text class="entity-text" x="306" y="792">duplicate、milestone</text>
+
+  <rect class="entity" x="470" y="715" width="120" height="96" rx="13" stroke="#f97316"/>
+  <text class="entity-title" x="491" y="744">FixProposal</text>
+  <text class="entity-text" x="491" y="769">PR / patch</text>
+  <text class="entity-text" x="491" y="792">waiver / workaround</text>
+
+  <rect class="entity" x="100" y="855" width="150" height="96" rx="13" stroke="#f97316"/>
+  <text class="entity-title" x="121" y="884">Occurrence</text>
+  <text class="entity-text" x="121" y="909">同根失败聚合</text>
+  <text class="entity-text" x="121" y="932">签名与置信度</text>
+
+  <rect class="entity" x="285" y="855" width="150" height="96" rx="13" stroke="#f97316"/>
+  <text class="entity-title" x="306" y="884">VerificationPlan</text>
+  <text class="entity-text" x="306" y="909">required platforms</text>
+  <text class="entity-text" x="306" y="932">修复验证范围</text>
+
+  <rect class="entity" x="470" y="855" width="120" height="96" rx="13" stroke="#f97316"/>
+  <text class="entity-title" x="491" y="884">Check</text>
+  <text class="entity-text" x="491" y="909">QEMU / EMU</text>
+  <text class="entity-text" x="491" y="932">FPGA / CI</text>
+
+  <rect class="entity" x="285" y="995" width="150" height="84" rx="13" stroke="#f97316"/>
+  <text class="entity-title" x="306" y="1024">CloseGate</text>
+  <text class="entity-text" x="306" y="1049">证据、checks、owner</text>
+
+  <!-- Evidence entities -->
+  <rect class="entity" x="715" y="715" width="150" height="96" rx="13" stroke="#9333ea"/>
+  <text class="entity-title" x="736" y="744">ArtifactIndex</text>
+  <text class="entity-text" x="736" y="769">S3 路径、hash</text>
+  <text class="entity-text" x="736" y="792">日志、dump、波形</text>
+
+  <rect class="entity" x="910" y="715" width="175" height="96" rx="13" stroke="#9333ea"/>
+  <text class="entity-title" x="931" y="744">KnowledgeBase</text>
+  <text class="entity-text" x="931" y="769">规范、Runbook、历史失败</text>
+  <text class="entity-text" x="931" y="792">向量索引和检索</text>
+
+  <rect class="entity" x="715" y="855" width="150" height="96" rx="13" stroke="#9333ea"/>
+  <text class="entity-title" x="736" y="884">MetricSnapshot</text>
+  <text class="entity-text" x="736" y="909">资源利用率</text>
+  <text class="entity-text" x="736" y="932">SLA、Agent 成本</text>
+
+  <rect class="entity" x="910" y="855" width="175" height="96" rx="13" stroke="#9333ea"/>
+  <text class="entity-title" x="931" y="884">AuditTrail</text>
+  <text class="entity-text" x="931" y="909">人工 override</text>
+  <text class="entity-text" x="931" y="932">审批、危险动作</text>
+
+  <!-- Presentation entities -->
+  <rect class="entity" x="1220" y="715" width="145" height="96" rx="13" stroke="#64748b"/>
+  <text class="entity-title" x="1241" y="744">Resource Board</text>
+  <text class="entity-text" x="1241" y="769">地图、队列、租约</text>
+  <text class="entity-text" x="1241" y="792">调度解释</text>
+
+  <rect class="entity" x="1400" y="715" width="145" height="96" rx="13" stroke="#64748b"/>
+  <text class="entity-title" x="1421" y="744">Execution Board</text>
+  <text class="entity-text" x="1421" y="769">DAG、矩阵</text>
+  <text class="entity-text" x="1421" y="792">跳过和阻断原因</text>
+
+  <rect class="entity" x="1580" y="715" width="115" height="96" rx="13" stroke="#64748b"/>
+  <text class="entity-title" x="1601" y="744">Agent Studio</text>
+  <text class="entity-text" x="1601" y="769">版本、工具</text>
+  <text class="entity-text" x="1601" y="792">Trace、质量</text>
+
+  <rect class="entity" x="1220" y="855" width="145" height="96" rx="13" stroke="#64748b"/>
+  <text class="entity-title" x="1241" y="884">Failure Board</text>
+  <text class="entity-text" x="1241" y="909">Issue、PR、checks</text>
+  <text class="entity-text" x="1241" y="932">关闭门禁</text>
+
+  <rect class="entity" x="1400" y="855" width="145" height="96" rx="13" stroke="#64748b"/>
+  <text class="entity-title" x="1421" y="884">Milestone Board</text>
+  <text class="entity-text" x="1421" y="909">准入、风险 Top</text>
+  <text class="entity-text" x="1421" y="932">未闭环项</text>
+
+  <rect class="entity" x="1580" y="855" width="115" height="96" rx="13" stroke="#64748b"/>
+  <text class="entity-title" x="1601" y="884">Report</text>
+  <text class="entity-text" x="1601" y="909">日报、周报</text>
+  <text class="entity-text" x="1601" y="932">夜间摘要</text>
+
+  <!-- Relations -->
+  <path class="arrow" d="M255 277 L285 277"/>
+  <text class="rel" x="263" y="264">覆盖</text>
+  <path class="arrow" d="M357 319 L357 360"/>
+  <text class="rel" x="371" y="346">平台标注</text>
+  <path class="arrow" d="M177 319 L177 360"/>
+  <text class="rel" x="191" y="346">依赖</text>
+
+  <path class="arrow" d="M430 402 C485 402 500 277 550 277"/>
+  <text class="rel" x="462" y="332">选择用例</text>
+  <path class="arrow" d="M700 277 L735 277"/>
+  <text class="rel" x="704" y="249">绑定</text>
+  <path class="arrow" d="M625 319 L625 360"/>
+  <text class="rel" x="639" y="346">生成</text>
+  <path class="arrow" d="M700 408 L735 408"/>
+  <text class="rel" x="704" y="395">包含</text>
+  <path class="arrow" d="M807 456 C807 485 790 520 790 527"/>
+  <path class="arrow" d="M735 527 C715 527 700 527 790 527"/>
+  <path class="arrow" d="M790 527 L790 527"/>
+
+  <path class="arrow" d="M880 408 C930 408 950 277 1000 277"/>
+  <text class="rel" x="914" y="332">申请资源</text>
+  <path class="arrow" d="M1145 277 L1160 277"/>
+  <text class="rel" x="1138" y="249">匹配</text>
+  <path class="arrow" d="M1072 319 L1072 360"/>
+  <text class="rel" x="1086" y="346">授予</text>
+  <path class="arrow" d="M1160 408 L1145 408"/>
+  <text class="rel" x="1124" y="396">健康</text>
+  <path class="arrow" d="M1072 456 C1015 540 860 527 790 527"/>
+  <text class="rel" x="942" y="535">执行产出</text>
+
+  <path class="arrow" d="M790 569 C700 650 365 655 250 715"/>
+  <text class="rel" x="512" y="663">失败生成</text>
+  <path class="arrow" d="M250 763 L285 763"/>
+  <text class="rel" x="255" y="750">归档</text>
+  <path class="arrow" d="M360 811 L360 855"/>
+  <text class="rel" x="374" y="840">验证计划</text>
+  <path class="arrow" d="M435 763 L470 763"/>
+  <text class="rel" x="438" y="750">修复</text>
+  <path class="arrow" d="M435 903 L470 903"/>
+  <text class="rel" x="438" y="890">checks</text>
+  <path class="arrow" d="M360 951 L360 995"/>
+  <text class="rel" x="374" y="979">关闭评估</text>
+  <path class="arrow" d="M250 903 C270 873 270 793 285 763"/>
+  <text class="rel" x="255" y="842">occurrence</text>
+
+  <path class="arrow-soft" d="M250 763 C410 690 590 720 715 763"/>
+  <text class="rel" x="496" y="718">引用证据</text>
+  <path class="arrow-soft" d="M435 1037 C560 1040 650 932 715 903"/>
+  <text class="rel" x="553" y="991">审计/指标</text>
+
+  <path class="arrow" d="M1280 277 C1325 277 1350 277 1398 277"/>
+  <text class="rel" x="1310" y="249">心跳</text>
+  <path class="arrow" d="M1533 277 L1560 277"/>
+  <text class="rel" x="1537" y="264">匹配</text>
+  <path class="arrow" d="M1465 319 L1465 360"/>
+  <text class="rel" x="1479" y="346">命中</text>
+  <path class="arrow" d="M1533 408 L1560 408"/>
+  <text class="rel" x="1537" y="395">运行</text>
+  <path class="arrow-soft" d="M1560 456 C1510 585 720 585 590 715"/>
+  <text class="rel" x="1050" y="610">Agent 输出动作和证据</text>
+  <path class="arrow-soft" d="M1560 456 C1515 570 1290 640 1292 715"/>
+  <text class="rel" x="1386" y="635">Trace 展示</text>
+
+  <path class="arrow-soft" d="M865 763 C1000 735 1100 735 1220 763"/>
+  <path class="arrow-soft" d="M865 903 C1000 875 1100 875 1220 903"/>
+  <path class="arrow-soft" d="M590 903 C835 1020 1120 1010 1400 903"/>
+  <path class="arrow-soft" d="M1690 408 C1740 575 1740 1030 1545 903"/>
+
+  <!-- Legend -->
+  <rect x="70" y="1160" width="1660" height="96" rx="18" fill="#ffffff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text class="legend" x="105" y="1195">读图方式：实线表示主业务依赖，虚线表示证据、指标、事件或展示引用。业务对象通过 EventRecord 产生自动化触发，AgentRun 不直接越权改数据，而是输出结构化动作，经规则和权限提交。</text>
+  <text class="legend" x="105" y="1228">建模约束：ExecutionGraph 是执行时快照；FPGA/EMU 节点必须关联资源请求或租约；FailureIssue 关闭必须有 CloseGateEvaluation；每条规则运行时只创建一个 AgentRun。</text>
+</svg>

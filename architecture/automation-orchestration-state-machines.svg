@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200" role="img" aria-labelledby="title desc">
+  <title id="title">事件规则 Agent 编排状态机</title>
+  <desc id="desc">Event、RuleActivation、AgentRun 三个状态机，以及规则与 Agent 运行实例一对一的约束。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .lane { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .head { fill: #0f172a; }
+      .head-title { font: 700 22px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .head-sub { font: 400 14px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.86); }
+      .state { fill: #ffffff; stroke-width: 1.4; }
+      .state-title { font: 700 15px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .state-text { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .arrow { stroke: #475569; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 7 7; }
+      .label { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .note { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1800" height="1200"/>
+  <text class="title" x="70" y="58">事件规则 Agent 编排状态机</text>
+  <text class="subtitle" x="70" y="90">Event 负责事实流转，RuleActivation 负责规则命中，AgentRun 负责一次具体 Agent 执行。运行层严格 1:1。</text>
+
+  <!-- Event lifecycle -->
+  <rect class="lane" x="55" y="130" width="1690" height="265" rx="22" stroke="#0891b2"/>
+  <rect class="head" x="80" y="156" width="210" height="76" rx="18" fill="#0e7490"/>
+  <text class="head-title" x="106" y="187">Event 状态机</text>
+  <text class="head-sub" x="106" y="211">事实事件生命周期</text>
+
+  <rect class="state" x="340" y="173" width="145" height="66" rx="13" stroke="#0891b2"/>
+  <text class="state-title" x="374" y="199">RECEIVED</text>
+  <text class="state-text" x="366" y="221">接收原始事件</text>
+
+  <rect class="state" x="530" y="173" width="145" height="66" rx="13" stroke="#0891b2"/>
+  <text class="state-title" x="565" y="199">VALIDATED</text>
+  <text class="state-text" x="556" y="221">schema 通过</text>
+
+  <rect class="state" x="720" y="173" width="145" height="66" rx="13" stroke="#0891b2"/>
+  <text class="state-title" x="760" y="199">STORED</text>
+  <text class="state-text" x="747" y="221">持久化可重放</text>
+
+  <rect class="state" x="910" y="173" width="145" height="66" rx="13" stroke="#0891b2"/>
+  <text class="state-title" x="943" y="199">ROUTED</text>
+  <text class="state-text" x="936" y="221">投递规则匹配</text>
+
+  <rect class="state" x="1100" y="173" width="145" height="66" rx="13" stroke="#0891b2"/>
+  <text class="state-title" x="1129" y="199">MATCHED</text>
+  <text class="state-text" x="1122" y="221">0..N 条规则命中</text>
+
+  <rect class="state" x="1290" y="150" width="155" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1321" y="176">PROCESSED</text>
+  <text class="state-text" x="1318" y="198">规则处理完成</text>
+
+  <rect class="state" x="1290" y="245" width="155" height="66" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="1324" y="271">DLQ</text>
+  <text class="state-text" x="1315" y="293">失败隔离/待重放</text>
+
+  <rect class="state" x="1490" y="173" width="145" height="66" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="1525" y="199">REPLAYED</text>
+  <text class="state-text" x="1516" y="221">人工或系统回放</text>
+
+  <path class="arrow" d="M 485 206 L 525 206"/>
+  <path class="arrow" d="M 675 206 L 715 206"/>
+  <path class="arrow" d="M 865 206 L 905 206"/>
+  <path class="arrow" d="M 1055 206 L 1095 206"/>
+  <path class="arrow" d="M 1245 196 L 1285 184"/>
+  <path class="arrow-soft" d="M 1245 218 C 1268 246 1275 270 1285 278"/>
+  <path class="arrow-soft" d="M 1445 278 C 1490 278 1502 240 1490 218"/>
+
+  <!-- RuleActivation lifecycle -->
+  <rect class="lane" x="55" y="430" width="1690" height="285" rx="22" stroke="#16a34a"/>
+  <rect class="head" x="80" y="456" width="240" height="76" rx="18" fill="#15803d"/>
+  <text class="head-title" x="106" y="487">RuleActivation</text>
+  <text class="head-sub" x="106" y="511">规则命中生命周期</text>
+
+  <rect class="state" x="350" y="482" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="386" y="508">MATCHED</text>
+  <text class="state-text" x="374" y="530">规则初步命中</text>
+
+  <rect class="state" x="540" y="482" width="165" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="568" y="508">CONTEXT_READY</text>
+  <text class="state-text" x="570" y="530">上下文已装载</text>
+
+  <rect class="state" x="750" y="482" width="165" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="782" y="508">EVALUATED</text>
+  <text class="state-text" x="778" y="530">条件表达式完成</text>
+
+  <rect class="state" x="960" y="452" width="165" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="991" y="478">TRIGGERED</text>
+  <text class="state-text" x="985" y="500">创建一个 AgentRun</text>
+
+  <rect class="state" x="960" y="572" width="165" height="66" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="1012" y="598">SKIPPED</text>
+  <text class="state-text" x="986" y="620">条件不满足/被节流</text>
+
+  <rect class="state" x="1170" y="452" width="165" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="1199" y="478">AGENT_LINKED</text>
+  <text class="state-text" x="1210" y="500">绑定运行实例</text>
+
+  <rect class="state" x="1380" y="452" width="165" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1420" y="478">COMPLETED</text>
+  <text class="state-text" x="1414" y="500">等待 Agent 结果</text>
+
+  <rect class="state" x="1170" y="572" width="165" height="66" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="1218" y="598">FAILED</text>
+  <text class="state-text" x="1198" y="620">上下文/条件失败</text>
+
+  <path class="arrow" d="M 495 515 L 535 515"/>
+  <path class="arrow" d="M 705 515 L 745 515"/>
+  <path class="arrow" d="M 915 500 L 955 486"/>
+  <path class="arrow-soft" d="M 915 530 C 940 565 945 600 955 605"/>
+  <path class="arrow" d="M 1125 486 L 1165 486"/>
+  <path class="arrow" d="M 1335 486 L 1375 486"/>
+  <path class="arrow-soft" d="M 705 530 C 860 690 1090 670 1165 612"/>
+  <text class="label" x="965" y="435">1 activation → 1 run</text>
+
+  <!-- AgentRun lifecycle -->
+  <rect class="lane" x="55" y="750" width="1690" height="315" rx="22" stroke="#f97316"/>
+  <rect class="head" x="80" y="776" width="240" height="76" rx="18" fill="#c2410c"/>
+  <text class="head-title" x="106" y="807">AgentRun 状态机</text>
+  <text class="head-sub" x="106" y="831">一次 Agent 执行生命周期</text>
+
+  <rect class="state" x="350" y="800" width="145" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="389" y="826">CREATED</text>
+  <text class="state-text" x="372" y="848">由规则命中创建</text>
+
+  <rect class="state" x="540" y="800" width="145" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="580" y="826">QUEUED</text>
+  <text class="state-text" x="570" y="848">等待运行资源</text>
+
+  <rect class="state" x="730" y="800" width="145" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="768" y="826">RUNNING</text>
+  <text class="state-text" x="762" y="848">Agent 执行中</text>
+
+  <rect class="state" x="920" y="800" width="145" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="950" y="826">TOOL_CALL</text>
+  <text class="state-text" x="940" y="848">MCP/Skill 调用</text>
+
+  <rect class="state" x="1110" y="800" width="155" height="66" rx="13" stroke="#f97316"/>
+  <text class="state-title" x="1144" y="826">VALIDATING</text>
+  <text class="state-text" x="1135" y="848">输出 schema 校验</text>
+
+  <rect class="state" x="1310" y="760" width="145" height="66" rx="13" stroke="#16a34a"/>
+  <text class="state-title" x="1352" y="786">SUCCESS</text>
+  <text class="state-text" x="1338" y="808">结果已提交</text>
+
+  <rect class="state" x="1310" y="850" width="145" height="66" rx="13" stroke="#dc2626"/>
+  <text class="state-title" x="1355" y="876">FAILED</text>
+  <text class="state-text" x="1330" y="898">可重试或进入 DLQ</text>
+
+  <rect class="state" x="1500" y="760" width="145" height="66" rx="13" stroke="#7c3aed"/>
+  <text class="state-title" x="1532" y="786">EVENT_OUT</text>
+  <text class="state-text" x="1518" y="808">发布完成事件</text>
+
+  <rect class="state" x="1500" y="850" width="145" height="66" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="1526" y="876">HUMAN_REVIEW</text>
+  <text class="state-text" x="1530" y="898">需人工确认</text>
+
+  <rect class="state" x="730" y="930" width="145" height="66" rx="13" stroke="#64748b"/>
+  <text class="state-title" x="765" y="956">CANCELLED</text>
+  <text class="state-text" x="760" y="978">人工或系统取消</text>
+
+  <path class="arrow" d="M 495 833 L 535 833"/>
+  <path class="arrow" d="M 685 833 L 725 833"/>
+  <path class="arrow" d="M 875 833 L 915 833"/>
+  <path class="arrow" d="M 1065 833 L 1105 833"/>
+  <path class="arrow" d="M 1265 818 C 1290 800 1295 795 1305 793"/>
+  <path class="arrow-soft" d="M 1265 848 C 1290 875 1295 885 1305 883"/>
+  <path class="arrow" d="M 1455 793 L 1495 793"/>
+  <path class="arrow-soft" d="M 1455 883 L 1495 883"/>
+  <path class="arrow-soft" d="M 992 866 C 970 960 900 963 880 963"/>
+  <path class="arrow-soft" d="M 1382 760 C 1382 700 1045 690 1042 520"/>
+  <text class="label" x="1375" y="735">agent.completed / agent.failed 回到事件总线</text>
+
+  <text class="note" x="70" y="1125">1:1 约束：`RuleActivation.agentRunId` 必须唯一且非空；`AgentRun.ruleActivationId` 必须唯一且非空。一个事件可命中多条规则，但每条命中只产生一个 AgentRun。</text>
+  <text class="note" x="70" y="1152">如果一个业务场景需要多个 Agent 并行，建多条规则；如果是同一个目标的内部协作，由一个 AgentRun 内部调用 Skill/Subagent，不破坏规则触发层 1:1。</text>
+</svg>

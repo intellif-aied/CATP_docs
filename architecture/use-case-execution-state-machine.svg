@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1220" viewBox="0 0 1800 1220" role="img" aria-labelledby="title desc">
+  <title id="title">用例执行 DAG 与状态机</title>
+  <desc id="desc">展示用例执行的 DAG、平台节点状态机、失败阻断和 QEMU 预筛失败跳过 EMU/FPGA 的策略。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .panel { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .head { fill: #0f172a; }
+      .head-title { font: 700 21px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .head-sub { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.86); }
+      .node { fill: #ffffff; stroke-width: 1.35; }
+      .node-title { font: 700 15px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .node-text { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .arrow { stroke: #475569; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 7 7; }
+      .label { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .note { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+      .pill { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1800" height="1220"/>
+  <text class="title" x="70" y="58">用例执行 DAG 与状态机</text>
+  <text class="subtitle" x="70" y="90">执行顺序由用例依赖和平台路线共同决定；基础 gate 失败可阻断下游；QEMU 预筛失败可跳过 EMU/FPGA。</text>
+
+  <!-- DAG panel -->
+  <rect class="panel" x="55" y="130" width="1690" height="520" rx="22" stroke="#16a34a"/>
+  <rect class="head" x="82" y="156" width="230" height="72" rx="18" fill="#15803d"/>
+  <text class="head-title" x="106" y="187">执行 DAG 示例</text>
+  <text class="head-sub" x="106" y="211">用例层级 + 平台路线</text>
+
+  <rect x="90" y="270" width="150" height="36" rx="18" fill="#0ea5e9"/>
+  <text class="pill" x="128" y="293">Foundation</text>
+  <rect x="90" y="360" width="150" height="36" rx="18" fill="#6366f1"/>
+  <text class="pill" x="138" y="383">Common</text>
+  <rect x="90" y="450" width="150" height="36" rx="18" fill="#f97316"/>
+  <text class="pill" x="122" y="473">EMU enhanced</text>
+  <rect x="90" y="540" width="150" height="36" rx="18" fill="#16a34a"/>
+  <text class="pill" x="120" y="563">FPGA enhanced</text>
+
+  <rect class="node" x="310" y="245" width="190" height="76" rx="14" stroke="#0ea5e9"/>
+  <text class="node-title" x="336" y="273">C001 Boot API</text>
+  <text class="node-text" x="336" y="296">QEMU required</text>
+  <text class="node-text" x="336" y="314">gate: block_downstream</text>
+
+  <rect class="node" x="570" y="245" width="190" height="76" rx="14" stroke="#0ea5e9"/>
+  <text class="node-title" x="596" y="273">C002 Reg Access</text>
+  <text class="node-text" x="596" y="296">QEMU precheck</text>
+  <text class="node-text" x="596" y="314">then EMU optional</text>
+
+  <rect class="node" x="830" y="335" width="200" height="76" rx="14" stroke="#6366f1"/>
+  <text class="node-title" x="856" y="363">C010 Queue Flow</text>
+  <text class="node-text" x="856" y="386">QEMU → EMU → FPGA</text>
+  <text class="node-text" x="856" y="404">if QEMU fail: skip later</text>
+
+  <rect class="node" x="1095" y="335" width="200" height="76" rx="14" stroke="#6366f1"/>
+  <text class="node-title" x="1121" y="363">C011 BAR/DMA</text>
+  <text class="node-text" x="1121" y="386">QEMU precheck</text>
+  <text class="node-text" x="1121" y="404">FPGA final required</text>
+
+  <rect class="node" x="830" y="510" width="200" height="76" rx="14" stroke="#f97316"/>
+  <text class="node-title" x="856" y="538">C020 Reset Recovery</text>
+  <text class="node-text" x="856" y="561">EMU required</text>
+  <text class="node-text" x="856" y="579">depends C010 pass</text>
+
+  <rect class="node" x="1360" y="510" width="210" height="76" rx="14" stroke="#16a34a"/>
+  <text class="node-title" x="1386" y="538">C030 Long Stress</text>
+  <text class="node-text" x="1386" y="561">FPGA required</text>
+  <text class="node-text" x="1386" y="579">depends C011 pass</text>
+
+  <path class="arrow" d="M 500 283 L 565 283"/>
+  <path class="arrow" d="M 760 300 C 800 320 805 340 825 360"/>
+  <path class="arrow" d="M 1030 373 L 1090 373"/>
+  <path class="arrow" d="M 930 411 L 930 505"/>
+  <path class="arrow" d="M 1295 373 C 1340 405 1385 460 1455 505"/>
+  <path class="arrow-soft" d="M 500 300 C 650 470 760 540 825 548"/>
+  <text class="label" x="515" y="258">基础通过后才展开</text>
+  <text class="label" x="1040" y="455">blocking dependency</text>
+  <text class="label" x="1230" y="525">FPGA 只跑被标注需要真实硬件的节点</text>
+
+  <rect x="330" y="595" width="260" height="34" rx="17" fill="#fee2e2" stroke="#dc2626"/>
+  <text class="label" x="360" y="617">如果 C001 fail：C010/C020/C030 blocked</text>
+  <rect x="630" y="595" width="300" height="34" rx="17" fill="#ffedd5" stroke="#f97316"/>
+  <text class="label" x="660" y="617">如果 C010 QEMU fail：C010 EMU/FPGA skipped</text>
+  <rect x="970" y="595" width="300" height="34" rx="17" fill="#dcfce7" stroke="#16a34a"/>
+  <text class="label" x="1000" y="617">如果 QEMU 不支持：可直接进入 EMU/FPGA</text>
+
+  <!-- Node state machine -->
+  <rect class="panel" x="55" y="690" width="1690" height="385" rx="22" stroke="#f97316"/>
+  <rect class="head" x="82" y="716" width="245" height="72" rx="18" fill="#c2410c"/>
+  <text class="head-title" x="106" y="747">平台节点状态机</text>
+  <text class="head-sub" x="106" y="771">CaseExecutionNode lifecycle</text>
+
+  <rect class="node" x="370" y="750" width="135" height="64" rx="13" stroke="#f97316"/>
+  <text class="node-title" x="406" y="776">PLANNED</text>
+  <text class="node-text" x="400" y="797">已生成节点</text>
+
+  <rect class="node" x="550" y="750" width="135" height="64" rx="13" stroke="#f97316"/>
+  <text class="node-title" x="583" y="776">WAITING</text>
+  <text class="node-text" x="574" y="797">等待依赖/gate</text>
+
+  <rect class="node" x="730" y="750" width="145" height="64" rx="13" stroke="#f97316"/>
+  <text class="node-title" x="760" y="776">READY</text>
+  <text class="node-text" x="756" y="797">可调度资源</text>
+
+  <rect class="node" x="920" y="750" width="145" height="64" rx="13" stroke="#f97316"/>
+  <text class="node-title" x="949" y="776">RUNNING</text>
+  <text class="node-text" x="944" y="797">平台执行中</text>
+
+  <rect class="node" x="1110" y="710" width="145" height="64" rx="13" stroke="#16a34a"/>
+  <text class="node-title" x="1149" y="736">PASSED</text>
+  <text class="node-text" x="1138" y="757">释放下游 gate</text>
+
+  <rect class="node" x="1110" y="810" width="145" height="64" rx="13" stroke="#dc2626"/>
+  <text class="node-title" x="1147" y="836">FAILED</text>
+  <text class="node-text" x="1134" y="857">触发失败策略</text>
+
+  <rect class="node" x="1300" y="750" width="145" height="64" rx="13" stroke="#64748b"/>
+  <text class="node-title" x="1338" y="776">SKIPPED</text>
+  <text class="node-text" x="1326" y="797">被预筛/依赖跳过</text>
+
+  <rect class="node" x="1490" y="750" width="145" height="64" rx="13" stroke="#7c3aed"/>
+  <text class="node-title" x="1514" y="776">HUMAN_REVIEW</text>
+  <text class="node-text" x="1518" y="797">需人工判定</text>
+
+  <rect class="node" x="920" y="930" width="145" height="64" rx="13" stroke="#64748b"/>
+  <text class="node-title" x="954" y="956">BLOCKED</text>
+  <text class="node-text" x="936" y="977">上游 gate 失败</text>
+
+  <path class="arrow" d="M 505 782 L 545 782"/>
+  <path class="arrow" d="M 685 782 L 725 782"/>
+  <path class="arrow" d="M 875 782 L 915 782"/>
+  <path class="arrow" d="M 1065 770 C 1085 750 1090 745 1105 742"/>
+  <path class="arrow" d="M 1065 795 C 1085 825 1090 838 1105 842"/>
+  <path class="arrow-soft" d="M 1255 842 C 1280 815 1288 800 1295 792"/>
+  <path class="arrow-soft" d="M 1255 842 C 1370 905 1480 840 1488 810"/>
+  <path class="arrow-soft" d="M 620 814 C 680 970 850 970 915 962"/>
+  <path class="arrow-soft" d="M 1182 710 C 1100 660 805 680 802 745"/>
+
+  <text class="label" x="1135" y="690">pass opens downstream</text>
+  <text class="label" x="1125" y="895">fail applies gate policy</text>
+  <text class="label" x="720" y="1035">依赖失败不是执行失败，而是 blocked；预筛失败导致后续平台节点 skipped。</text>
+
+  <text class="note" x="70" y="1145">状态差异：FAILED 表示本平台实际执行失败；SKIPPED 表示策略决定不用执行；BLOCKED 表示上游 gate 失败导致无法开始。</text>
+  <text class="note" x="70" y="1172">用例最终结论需要合并所有平台节点，并说明结论来源：model / EMU / FPGA。</text>
+</svg>

@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1220" viewBox="0 0 1800 1220" role="img" aria-labelledby="title desc">
+  <title id="title">通用事件规则与 Managed Agent 编排架构</title>
+  <desc id="desc">通用 Automation Orchestration 模块：事件接入、规则引擎、规则与 Agent 一对一触发、Managed Agent Runtime、结果回写与观测治理。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .section { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .head { fill: #0f172a; }
+      .head-title { font: 700 21px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .head-sub { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.86); }
+      .card { fill: #ffffff; stroke-width: 1.25; }
+      .card-title { font: 700 16px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .card-text { font: 400 12.5px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .pill { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .arrow { stroke: #475569; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 8 7; }
+      .label { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .note { font: 400 12.5px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1800" height="1220"/>
+  <text class="title" x="70" y="58">通用事件规则与 Managed Agent 编排架构</text>
+  <text class="subtitle" x="70" y="90">事件驱动引擎、规则引擎和 Managed Agent 平台合并为通用自动化编排模块；规则命中与 Agent 运行实例严格 1:1。</text>
+
+  <!-- Event sources -->
+  <rect class="section" x="55" y="130" width="315" height="850" rx="22" stroke="#6366f1"/>
+  <rect class="head" x="82" y="156" width="172" height="72" rx="18"/>
+  <text class="head-title" x="106" y="187">事件来源</text>
+  <text class="head-sub" x="106" y="211">业务 / 外部 / 人工</text>
+
+  <rect class="card" x="85" y="260" width="245" height="90" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="110" y="291">业务领域事件</text>
+  <text class="card-text" x="110" y="318">需求、用例、资源、任务、Issue</text>
+  <text class="card-text" x="110" y="340">统一发布 domain events</text>
+
+  <rect class="card" x="85" y="375" width="245" height="90" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="110" y="406">外部 Webhook</text>
+  <text class="card-text" x="110" y="433">PR、CI、版本发布、告警</text>
+  <text class="card-text" x="110" y="455">先转换为标准事件</text>
+
+  <rect class="card" x="85" y="490" width="245" height="90" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="110" y="521">时间与调度事件</text>
+  <text class="card-text" x="110" y="548">Cron、SLA、夜间窗口</text>
+  <text class="card-text" x="110" y="570">支持周期规则触发</text>
+
+  <rect class="card" x="85" y="605" width="245" height="90" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="110" y="636">人工操作事件</text>
+  <text class="card-text" x="110" y="663">审批、override、复跑、抢占</text>
+  <text class="card-text" x="110" y="685">人工动作同样可审计</text>
+
+  <rect class="card" x="85" y="720" width="245" height="125" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="110" y="751">事件标准化</text>
+  <text class="card-text" x="110" y="778">event_type / subject / trace_id</text>
+  <text class="card-text" x="110" y="801">schema_version / idempotency_key</text>
+  <text class="card-text" x="110" y="824">payload 只放事实，不放决策</text>
+
+  <!-- Event engine -->
+  <rect class="section" x="410" y="130" width="405" height="850" rx="22" stroke="#0891b2"/>
+  <rect class="head" x="438" y="156" width="210" height="72" rx="18" fill="#0e7490"/>
+  <text class="head-title" x="462" y="187">事件驱动引擎</text>
+  <text class="head-sub" x="462" y="211">Event Bus / Store</text>
+
+  <rect class="card" x="445" y="260" width="315" height="80" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="472" y="290">Event Ingress</text>
+  <text class="card-text" x="472" y="318">验签、限流、来源校验、格式转换</text>
+
+  <rect class="card" x="445" y="360" width="315" height="80" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="472" y="390">Schema Registry</text>
+  <text class="card-text" x="472" y="418">事件类型、payload 版本、兼容性检查</text>
+
+  <rect class="card" x="445" y="460" width="315" height="80" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="472" y="490">Event Store</text>
+  <text class="card-text" x="472" y="518">事件持久化、重放、trace 链路</text>
+
+  <rect class="card" x="445" y="560" width="315" height="80" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="472" y="590">Idempotency &amp; Dedup</text>
+  <text class="card-text" x="472" y="618">幂等键、去重窗口、重复事件抑制</text>
+
+  <rect class="card" x="445" y="660" width="315" height="80" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="472" y="690">Event Router</text>
+  <text class="card-text" x="472" y="718">按 event_type、scope、subject 投递规则匹配</text>
+
+  <rect class="card" x="445" y="760" width="315" height="80" rx="14" stroke="#0891b2"/>
+  <text class="card-title" x="472" y="790">Dead Letter / Replay</text>
+  <text class="card-text" x="472" y="818">失败事件隔离、人工修复、规则回放验证</text>
+
+  <!-- Rule engine -->
+  <rect class="section" x="855" y="130" width="425" height="850" rx="22" stroke="#16a34a"/>
+  <rect class="head" x="883" y="156" width="210" height="72" rx="18" fill="#15803d"/>
+  <text class="head-title" x="907" y="187">规则引擎</text>
+  <text class="head-sub" x="907" y="211">Rule → Agent 1:1</text>
+
+  <rect class="card" x="890" y="260" width="335" height="78" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="917" y="289">Rule Registry</text>
+  <text class="card-text" x="917" y="316">规则定义、启停、版本、灰度、作用域</text>
+
+  <rect class="card" x="890" y="358" width="335" height="78" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="917" y="387">Context Loader</text>
+  <text class="card-text" x="917" y="414">按规则声明拉取需求、用例、资源、Issue 等上下文</text>
+
+  <rect class="card" x="890" y="456" width="335" height="78" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="917" y="485">Condition Evaluator</text>
+  <text class="card-text" x="917" y="512">条件表达式、阈值、窗口、debounce、throttle</text>
+
+  <rect class="card" x="890" y="554" width="335" height="90" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="917" y="583">RuleAgentBinding</text>
+  <text class="card-text" x="917" y="610">一条启用规则只绑定一个 Agent Trigger</text>
+  <text class="card-text" x="917" y="632">一次规则命中只创建一个 AgentRun</text>
+
+  <rect x="908" y="665" width="143" height="34" rx="17" fill="#16a34a"/>
+  <text class="pill" x="936" y="687">Rule A</text>
+  <rect x="1080" y="665" width="143" height="34" rx="17" fill="#f97316"/>
+  <text class="pill" x="1103" y="687">AgentRun A</text>
+  <path class="arrow" d="M 1051 682 L 1075 682"/>
+  <text class="label" x="932" y="724">1 RuleActivation = 1 AgentRun</text>
+
+  <rect class="card" x="890" y="750" width="335" height="90" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="917" y="779">Decision Recorder</text>
+  <text class="card-text" x="917" y="806">命中原因、上下文快照、跳过原因、绑定版本</text>
+  <text class="card-text" x="917" y="828">用于解释、审计和回放</text>
+
+  <!-- Managed Agent -->
+  <rect class="section" x="1320" y="130" width="425" height="850" rx="22" stroke="#f97316"/>
+  <rect class="head" x="1348" y="156" width="230" height="72" rx="18" fill="#c2410c"/>
+  <text class="head-title" x="1372" y="187">Managed Agent</text>
+  <text class="head-sub" x="1372" y="211">Registry / Runtime / Tools</text>
+
+  <rect class="card" x="1355" y="260" width="335" height="76" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1382" y="289">Agent Template &amp; Version</text>
+  <text class="card-text" x="1382" y="316">模板、版本、owner、能力声明、输出 schema</text>
+
+  <rect class="card" x="1355" y="356" width="335" height="76" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1382" y="385">Context Builder</text>
+  <text class="card-text" x="1382" y="412">事件 + 规则上下文 → Agent 输入包</text>
+
+  <rect class="card" x="1355" y="452" width="335" height="76" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1382" y="481">Runtime &amp; Queue</text>
+  <text class="card-text" x="1382" y="508">预算、超时、并发、重试、取消、隔离</text>
+
+  <rect class="card" x="1355" y="548" width="335" height="76" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1382" y="577">MCP / Skill / Subagent</text>
+  <text class="card-text" x="1382" y="604">工具授权、Skill 装配、子 Agent 协作</text>
+
+  <rect class="card" x="1355" y="644" width="335" height="76" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1382" y="673">Output Parser &amp; Validator</text>
+  <text class="card-text" x="1382" y="700">结构化输出、schema 校验、置信度、证据</text>
+
+  <rect class="card" x="1355" y="740" width="335" height="100" rx="14" stroke="#f97316"/>
+  <text class="card-title" x="1382" y="769">Result Committer</text>
+  <text class="card-text" x="1382" y="796">写入业务对象、Artifact、Agent Trace</text>
+  <text class="card-text" x="1382" y="818">发布 agent.completed / agent.failed 事件</text>
+
+  <!-- Bottom governance -->
+  <rect class="section" x="55" y="1020" width="1690" height="130" rx="22" stroke="#7c3aed"/>
+  <rect class="head" x="82" y="1043" width="230" height="84" rx="18" fill="#6d28d9"/>
+  <text class="head-title" x="106" y="1078">通用治理与观测</text>
+  <text class="head-sub" x="106" y="1102">Explain / Audit / Metrics</text>
+
+  <rect class="card" x="350" y="1043" width="250" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="377" y="1074">可解释</text>
+  <text class="card-text" x="377" y="1101">事件事实、规则条件、Agent 版本、输出证据</text>
+
+  <rect class="card" x="630" y="1043" width="250" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="657" y="1074">审计</text>
+  <text class="card-text" x="657" y="1101">谁触发、为什么触发、调用了什么工具</text>
+
+  <rect class="card" x="910" y="1043" width="250" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="937" y="1074">安全</text>
+  <text class="card-text" x="937" y="1101">权限、Secret、危险动作审批、人工 override</text>
+
+  <rect class="card" x="1190" y="1043" width="250" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="1217" y="1074">质量</text>
+  <text class="card-text" x="1217" y="1101">成功率、成本、延迟、重试、人工采纳率</text>
+
+  <rect class="card" x="1470" y="1043" width="225" height="84" rx="14" stroke="#7c3aed"/>
+  <text class="card-title" x="1497" y="1074">回放</text>
+  <text class="card-text" x="1497" y="1101">事件重放、规则 dry-run、Agent 回归样例</text>
+
+  <!-- Arrows -->
+  <path class="arrow" d="M 330 305 C 370 305 390 305 440 305"/>
+  <path class="arrow" d="M 330 420 C 370 420 390 420 440 305"/>
+  <path class="arrow" d="M 330 535 C 370 535 390 535 440 305"/>
+  <path class="arrow" d="M 330 650 C 370 650 390 650 440 305"/>
+  <path class="arrow" d="M 760 700 C 820 700 835 700 885 496"/>
+  <path class="arrow" d="M 1225 600 C 1270 600 1300 600 1350 490"/>
+  <path class="arrow" d="M 1225 795 C 1270 795 1300 795 1350 682"/>
+  <path class="arrow-soft" d="M 1522 840 C 1522 920 610 935 605 745"/>
+  <path class="arrow-soft" d="M 1522 840 C 1522 990 600 1000 600 1040"/>
+
+  <text class="label" x="1265" y="590">绑定触发</text>
+  <text class="label" x="1560" y="925">Agent 结果回写为新事件</text>
+  <text class="note" x="70" y="1188">配置层：RuleAgentBinding 约束一条规则只绑定一个 Agent Trigger；运行层：每个 RuleActivation 只创建一个 AgentRun。复杂协作由该 Agent 内部使用 Skill/Subagent 完成。</text>
+</svg>

@@ -1,0 +1,266 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1320" viewBox="0 0 1800 1320" role="img" aria-labelledby="title desc">
+  <title id="title">芯片软件验证自动化平台五层分层架构</title>
+  <desc id="desc">从基础资源与存储层、平台组件与能力层、管理模块与规则编排层、Agent 层到展示与协同层的分层架构图。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 18px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .layer { stroke-width: 1.5; filter: url(#shadow); }
+      .layer-title { font: 700 24px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .layer-subtitle { font: 400 15px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.88); }
+      .card { fill: #ffffff; stroke-width: 1.2; }
+      .card-title { font: 700 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .card-text { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .card-small { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+      .flow { stroke: #475569; stroke-width: 2.2; fill: none; marker-end: url(#arrow); opacity: 0.85; }
+      .flow-label { font: 700 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .note { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" x="0" y="0" width="1800" height="1320"/>
+  <text class="title" x="70" y="56">芯片软件验证自动化平台五层分层架构</text>
+  <text class="subtitle" x="70" y="88">自下而上：基础资源与存储 → 平台组件与能力 → 管理模块与规则编排 → 目的明确的 Agent → 展示与协同</text>
+  <text class="note" x="1430" y="60">面向投片前验证</text>
+  <text class="note" x="1430" y="82">资源纳管 + Agent 自动化 + 风险准入</text>
+
+  <!-- Layer 5 -->
+  <g id="layer-5">
+    <rect class="layer" x="50" y="120" width="1700" height="165" rx="22" fill="#fdf2f8" stroke="#db2777"/>
+    <rect x="70" y="142" width="165" height="121" rx="18" fill="#be185d"/>
+    <text class="layer-title" x="94" y="184">第五层</text>
+    <text class="layer-title" x="94" y="214">展示与协同</text>
+    <text class="layer-subtitle" x="94" y="244">看板 / 工作台 / 通知</text>
+
+    <rect class="card" x="270" y="145" width="260" height="110" rx="14" stroke="#db2777"/>
+    <text class="card-title" x="292" y="177">Dashboard</text>
+    <text class="card-text" x="292" y="204">资源利用率、执行进度</text>
+    <text class="card-text" x="292" y="226">失败趋势、投片准入</text>
+
+    <rect class="card" x="555" y="145" width="260" height="110" rx="14" stroke="#db2777"/>
+    <text class="card-title" x="577" y="177">验证工作台</text>
+    <text class="card-text" x="577" y="204">需求、用例、计划、任务</text>
+    <text class="card-text" x="577" y="226">Issue、PR、人工操作</text>
+
+    <rect class="card" x="840" y="145" width="260" height="110" rx="14" stroke="#db2777"/>
+    <text class="card-title" x="862" y="177">Agent Studio</text>
+    <text class="card-text" x="862" y="204">Agent 编排与版本管理</text>
+    <text class="card-text" x="862" y="226">MCP / Skill / Subagent 可视化</text>
+
+    <rect class="card" x="1125" y="145" width="260" height="110" rx="14" stroke="#db2777"/>
+    <text class="card-title" x="1147" y="177">报告与通知</text>
+    <text class="card-text" x="1147" y="204">日报、周报、里程碑报告</text>
+    <text class="card-text" x="1147" y="226">风险提醒、阻塞升级</text>
+
+    <rect class="card" x="1410" y="145" width="260" height="110" rx="14" stroke="#db2777"/>
+    <text class="card-title" x="1432" y="177">管理与配置</text>
+    <text class="card-text" x="1432" y="204">权限、字典、策略配置</text>
+    <text class="card-text" x="1432" y="226">项目空间、角色视图</text>
+  </g>
+
+  <!-- Layer 4 -->
+  <g id="layer-4">
+    <rect class="layer" x="50" y="315" width="1700" height="250" rx="22" fill="#fff7ed" stroke="#ea580c"/>
+    <rect x="70" y="339" width="165" height="202" rx="18" fill="#c2410c"/>
+    <text class="layer-title" x="94" y="409">第四层</text>
+    <text class="layer-title" x="94" y="439">Agent 层</text>
+    <text class="layer-subtitle" x="94" y="469">专用 Agent</text>
+    <text class="layer-subtitle" x="94" y="492">自动调度 / 分析</text>
+
+    <rect class="card" x="270" y="342" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="292" y="367">资源调度 Agent</text>
+    <text class="card-text" x="292" y="389">资源选择、抢占、预约、夜间空闲填充、drain 策略</text>
+
+    <rect class="card" x="740" y="342" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="762" y="367">用例选择 Agent</text>
+    <text class="card-text" x="762" y="389">冒烟、全量、增量、风险回归；按变更影响筛选</text>
+
+    <rect class="card" x="1210" y="342" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="1232" y="367">执行 Agent</text>
+    <text class="card-text" x="1232" y="389">部署环境、拉取版本、执行用例、采集结果和现场</text>
+
+    <rect class="card" x="270" y="418" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="292" y="443">失败分析 Agent</text>
+    <text class="card-text" x="292" y="465">日志解析、失败聚类、归因建议、已知问题匹配</text>
+
+    <rect class="card" x="740" y="418" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="762" y="443">复跑 Agent</text>
+    <text class="card-text" x="762" y="465">同平台复跑、换资源复跑、跨平台复现、失败子集复跑</text>
+
+    <rect class="card" x="1210" y="418" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="1232" y="443">问题定位 Agent</text>
+    <text class="card-text" x="1232" y="465">Trace、二分版本/参数、最小复现、现场保护</text>
+
+    <rect class="card" x="270" y="494" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="292" y="519">报告 Agent</text>
+    <text class="card-text" x="292" y="541">日报、周报、资源利用率、风险 Top、准入建议</text>
+
+    <rect class="card" x="740" y="494" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="762" y="519">变更影响 Agent</text>
+    <text class="card-text" x="762" y="541">PR/版本变更影响面、用例映射、修复验证计划</text>
+
+    <rect class="card" x="1210" y="494" width="450" height="58" rx="12" stroke="#ea580c"/>
+    <text class="card-title" x="1232" y="519">治理守护 Agent</text>
+    <text class="card-text" x="1232" y="541">权限检查、危险动作审批、预算控制、输出质量检查</text>
+  </g>
+
+  <!-- Layer 3 -->
+  <g id="layer-3">
+    <rect class="layer" x="50" y="595" width="1700" height="275" rx="22" fill="#f0fdf4" stroke="#16a34a"/>
+    <rect x="70" y="621" width="165" height="223" rx="18" fill="#15803d"/>
+    <text class="layer-title" x="94" y="692">第三层</text>
+    <text class="layer-title" x="94" y="722">管理与规则</text>
+    <text class="layer-subtitle" x="94" y="752">业务对象</text>
+    <text class="layer-subtitle" x="94" y="775">状态机 / 策略</text>
+
+    <rect class="card" x="270" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="292" y="650">需求管理</text>
+    <text class="card-text" x="292" y="672">需求拆解、覆盖关系、变更影响、准入追踪</text>
+
+    <rect class="card" x="560" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="582" y="650">用例管理</text>
+    <text class="card-text" x="582" y="672">用例库、平台适配、风险等级、历史通过率</text>
+
+    <rect class="card" x="850" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="872" y="650">资源管理</text>
+    <text class="card-text" x="872" y="672">能力、健康、占用、预约、暂停、调试状态</text>
+
+    <rect class="card" x="1140" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="1162" y="650">里程碑管理</text>
+    <text class="card-text" x="1162" y="672">阶段门、投片准入项、完成度、风险收敛</text>
+
+    <rect class="card" x="1430" y="623" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="1452" y="650">执行计划管理</text>
+    <text class="card-text" x="1452" y="672">全量、冒烟、增量、夜间、专项定位计划</text>
+
+    <rect class="card" x="270" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="292" y="742">执行任务管理</text>
+    <text class="card-text" x="292" y="764">排队、调度、执行、复跑、迁移、取消</text>
+
+    <rect class="card" x="560" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="582" y="742">Issue 管理</text>
+    <text class="card-text" x="582" y="764">失败归因、owner、已知问题、修复闭环</text>
+
+    <rect class="card" x="850" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="872" y="742">PR 管理</text>
+    <text class="card-text" x="872" y="764">变更解析、评审、CI 结果、修复验证</text>
+
+    <rect class="card" x="1140" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="1162" y="742">规则引擎</text>
+    <text class="card-text" x="1162" y="764">准入、调度、复跑、风险、升级策略</text>
+
+    <rect class="card" x="1430" y="715" width="270" height="70" rx="12" stroke="#16a34a"/>
+    <text class="card-title" x="1452" y="742">事件驱动编排</text>
+    <text class="card-text" x="1452" y="764">事件总线、状态机、DAG、SLA、补偿</text>
+
+    <rect x="270" y="810" width="1430" height="36" rx="18" fill="#dcfce7" stroke="#86efac"/>
+    <text class="card-small" x="292" y="833">本层是平台状态中心：所有 Agent 动作必须读写统一业务对象、统一状态机和统一事件，避免重复执行、抢资源和结果覆盖。</text>
+  </g>
+
+  <!-- Layer 2 -->
+  <g id="layer-2">
+    <rect class="layer" x="50" y="900" width="1700" height="245" rx="22" fill="#ecfeff" stroke="#0891b2"/>
+    <rect x="70" y="924" width="165" height="197" rx="18" fill="#0e7490"/>
+    <text class="layer-title" x="94" y="992">第二层</text>
+    <text class="layer-title" x="94" y="1022">组件与能力</text>
+    <text class="layer-subtitle" x="94" y="1052">运行 / 工具</text>
+    <text class="layer-subtitle" x="94" y="1075">可插拔 / 可观测</text>
+
+    <rect class="card" x="270" y="927" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="292" y="951">K8s / Worker Runtime</text>
+    <text class="card-text" x="292" y="973">Job、Pod、Cron、弹性伸缩、执行沙箱、超时隔离</text>
+
+    <rect class="card" x="740" y="927" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="762" y="951">Queue / Lock</text>
+    <text class="card-text" x="762" y="973">优先级队列、资源锁、幂等、去重、冲突仲裁</text>
+
+    <rect class="card" x="1210" y="927" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="1232" y="951">Log Pipeline</text>
+    <text class="card-text" x="1232" y="973">执行日志、系统日志、Agent Trace、结构化解析</text>
+
+    <rect class="card" x="270" y="997" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="292" y="1021">MCP 组件</text>
+    <text class="card-text" x="292" y="1043">Server Registry、Tool Gateway、连接健康、调用审计</text>
+
+    <rect class="card" x="740" y="997" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="762" y="1021">Skill 组件</text>
+    <text class="card-text" x="762" y="1043">Skill 包、参数 Schema、版本、依赖、评审、发布</text>
+
+    <rect class="card" x="1210" y="997" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="1232" y="1021">Subagent 组件</text>
+    <text class="card-text" x="1232" y="1043">角色模板、上下文隔离、协作拓扑、结果汇总</text>
+
+    <rect class="card" x="270" y="1067" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="292" y="1091">Artifacts 组件</text>
+    <text class="card-text" x="292" y="1113">日志、Trace、Dump、波形、报告、复现脚本索引</text>
+
+    <rect class="card" x="740" y="1067" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="762" y="1091">Observability</text>
+    <text class="card-text" x="762" y="1113">Metrics、Audit、Agent 成本、质量评分、SLA</text>
+
+    <rect class="card" x="1210" y="1067" width="450" height="55" rx="12" stroke="#0891b2"/>
+    <text class="card-title" x="1232" y="1091">Secret / Access</text>
+    <text class="card-text" x="1232" y="1113">凭据托管、工具授权、资源操作审批、越权防护</text>
+  </g>
+
+  <!-- Layer 1 -->
+  <g id="layer-1">
+    <rect class="layer" x="50" y="1175" width="1700" height="115" rx="22" fill="#eef2ff" stroke="#4f46e5"/>
+    <rect x="70" y="1197" width="165" height="70" rx="18" fill="#4338ca"/>
+    <text class="layer-title" x="94" y="1226">第一层</text>
+    <text class="layer-title" x="94" y="1255">资源与存储</text>
+
+    <rect class="card" x="270" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="291" y="1222">SQL DB</text>
+    <text class="card-small" x="291" y="1244">业务元数据 / 状态</text>
+
+    <rect class="card" x="454" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="475" y="1222">S3 / MinIO</text>
+    <text class="card-small" x="475" y="1244">日志 / Artifact 大文件</text>
+
+    <rect class="card" x="638" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="659" y="1222">Redis</text>
+    <text class="card-small" x="659" y="1244">队列缓存 / 锁 / 心跳</text>
+
+    <rect class="card" x="822" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="843" y="1222">EMU 池</text>
+    <text class="card-small" x="843" y="1244">RTL 行为 / Trace 定位</text>
+
+    <rect class="card" x="1006" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="1027" y="1222">FPGA 池</text>
+    <text class="card-small" x="1027" y="1244">真实硬件 / 长稳压测</text>
+
+    <rect class="card" x="1190" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="1211" y="1222">CPU Farm</text>
+    <text class="card-small" x="1211" y="1244">编译 / 仿真 / 分析</text>
+
+    <rect class="card" x="1374" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="1395" y="1222">QEMU / Model</text>
+    <text class="card-small" x="1395" y="1244">cmodel / amodel 快速筛查</text>
+
+    <rect class="card" x="1558" y="1194" width="166" height="72" rx="12" stroke="#4f46e5"/>
+    <text class="card-title" x="1579" y="1222">Git / CI</text>
+    <text class="card-small" x="1579" y="1244">PR / Commit / Build 产物</text>
+  </g>
+
+  <!-- Layer flow arrows -->
+  <path class="flow" d="M 900 1167 L 900 1152"/>
+  <text class="flow-label" x="920" y="1163">封装为平台能力</text>
+  <path class="flow" d="M 900 892 L 900 877"/>
+  <text class="flow-label" x="920" y="888">沉淀业务状态和规则</text>
+  <path class="flow" d="M 900 587 L 900 572"/>
+  <text class="flow-label" x="920" y="583">驱动目的明确的 Agent</text>
+  <path class="flow" d="M 900 307 L 900 292"/>
+  <text class="flow-label" x="920" y="303">呈现给用户并支持人工协同</text>
+</svg>

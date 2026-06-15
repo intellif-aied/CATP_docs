@@ -1,0 +1,228 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1180" viewBox="0 0 1800 1180" role="img" aria-labelledby="title desc">
+  <title id="title">资源可视化工作台</title>
+  <desc id="desc">资源管理与调度模块的可视化工作台，展示资源地图、占用时间线、队列、租约、健康状态和人工操作入口。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.3; filter: url(#shadow); }
+      .panel-title { font: 700 20px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .label { font: 700 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #334155; }
+      .text { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .small { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+      .chip { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .button { fill: #0f172a; }
+      .button-text { font: 700 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .tile-title { font: 700 14px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .tile-text { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .axis { stroke: #cbd5e1; stroke-width: 1; }
+      .bar-text { font: 700 11px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1800" height="1180"/>
+  <text class="title" x="70" y="58">资源可视化工作台</text>
+  <text class="subtitle" x="70" y="90">让资源状态、占用人、程序任务、预约窗口、中断风险和调度理由都能被看见、操作和追溯。</text>
+
+  <!-- Top filters -->
+  <rect class="panel" x="55" y="122" width="1690" height="90" rx="20"/>
+  <text class="panel-title" x="82" y="157">全局筛选与策略上下文</text>
+  <rect x="82" y="174" width="130" height="28" rx="14" fill="#2563eb"/>
+  <text class="chip" x="112" y="193">Project A</text>
+  <rect x="228" y="174" width="145" height="28" rx="14" fill="#16a34a"/>
+  <text class="chip" x="255" y="193">Day: Human First</text>
+  <rect x="388" y="174" width="155" height="28" rx="14" fill="#0ea5e9"/>
+  <text class="chip" x="418" y="193">Night: Program Fill</text>
+  <rect x="558" y="174" width="125" height="28" rx="14" fill="#f97316"/>
+  <text class="chip" x="586" y="193">FPGA / EMU</text>
+  <rect x="698" y="174" width="140" height="28" rx="14" fill="#7c3aed"/>
+  <text class="chip" x="726" y="193">Milestone M3</text>
+  <text class="small" x="1420" y="163">当前时间窗：工作日 09:00-19:00</text>
+  <text class="small" x="1420" y="190">默认策略：人工调试优先，程序任务可排队或 drain</text>
+
+  <!-- Resource map -->
+  <rect class="panel" x="55" y="240" width="760" height="410" rx="22"/>
+  <text class="panel-title" x="82" y="278">资源地图</text>
+  <text class="small" x="82" y="303">按资源类型、状态、owner 和租约剩余时间展示；点击任一设备进入详情。</text>
+
+  <rect x="82" y="328" width="140" height="34" rx="17" fill="#eef2ff" stroke="#4f46e5"/>
+  <text class="label" x="112" y="350">FPGA 池</text>
+  <rect x="242" y="328" width="140" height="34" rx="17" fill="#ecfeff" stroke="#0891b2"/>
+  <text class="label" x="275" y="350">EMU 池</text>
+  <rect x="402" y="328" width="140" height="34" rx="17" fill="#f0fdf4" stroke="#16a34a"/>
+  <text class="label" x="430" y="350">CPU Farm</text>
+  <rect x="562" y="328" width="140" height="34" rx="17" fill="#fff7ed" stroke="#f97316"/>
+  <text class="label" x="595" y="350">QEMU</text>
+
+  <!-- resource tiles row 1 -->
+  <rect x="82" y="392" width="155" height="80" rx="14" fill="#dcfce7" stroke="#16a34a"/>
+  <text class="tile-title" x="104" y="421">FPGA-01</text>
+  <text class="tile-text" x="104" y="443">IDLE · 可调度</text>
+  <text class="tile-text" x="104" y="462">夜间允许程序</text>
+
+  <rect x="252" y="392" width="155" height="80" rx="14" fill="#dbeafe" stroke="#2563eb"/>
+  <text class="tile-title" x="274" y="421">FPGA-02</text>
+  <text class="tile-text" x="274" y="443">HUMAN · 张三</text>
+  <text class="tile-text" x="274" y="462">剩余 42 min</text>
+
+  <rect x="422" y="392" width="155" height="80" rx="14" fill="#ffedd5" stroke="#f97316"/>
+  <text class="tile-title" x="444" y="421">FPGA-03</text>
+  <text class="tile-text" x="444" y="443">PROGRAM · M3 回归</text>
+  <text class="tile-text" x="444" y="462">可 drain</text>
+
+  <rect x="592" y="392" width="155" height="80" rx="14" fill="#fee2e2" stroke="#dc2626"/>
+  <text class="tile-title" x="614" y="421">FPGA-04</text>
+  <text class="tile-text" x="614" y="443">UNHEALTHY</text>
+  <text class="tile-text" x="614" y="462">心跳丢失 8 min</text>
+
+  <!-- resource tiles row 2 -->
+  <rect x="82" y="492" width="155" height="80" rx="14" fill="#dbeafe" stroke="#2563eb"/>
+  <text class="tile-title" x="104" y="521">EMU-01</text>
+  <text class="tile-text" x="104" y="543">HUMAN · P0</text>
+  <text class="tile-text" x="104" y="562">现场保护</text>
+
+  <rect x="252" y="492" width="155" height="80" rx="14" fill="#ffedd5" stroke="#f97316"/>
+  <text class="tile-title" x="274" y="521">EMU-02</text>
+  <text class="tile-text" x="274" y="543">PROGRAM · Trace</text>
+  <text class="tile-text" x="274" y="562">checkpoint 支持</text>
+
+  <rect x="422" y="492" width="155" height="80" rx="14" fill="#dcfce7" stroke="#16a34a"/>
+  <text class="tile-title" x="444" y="521">CPU-12</text>
+  <text class="tile-text" x="444" y="543">IDLE · 批处理</text>
+  <text class="tile-text" x="444" y="562">并发 0/16</text>
+
+  <rect x="592" y="492" width="155" height="80" rx="14" fill="#ffedd5" stroke="#f97316"/>
+  <text class="tile-title" x="614" y="521">QEMU-A</text>
+  <text class="tile-text" x="614" y="543">PROGRAM</text>
+  <text class="tile-text" x="614" y="562">队列 9</text>
+
+  <rect x="82" y="600" width="665" height="30" rx="15" fill="#f8fafc" stroke="#cbd5e1"/>
+  <circle cx="106" cy="615" r="7" fill="#16a34a"/>
+  <text class="small" x="120" y="620">Idle</text>
+  <circle cx="186" cy="615" r="7" fill="#2563eb"/>
+  <text class="small" x="200" y="620">Human</text>
+  <circle cx="286" cy="615" r="7" fill="#f97316"/>
+  <text class="small" x="300" y="620">Program</text>
+  <circle cx="398" cy="615" r="7" fill="#dc2626"/>
+  <text class="small" x="412" y="620">Unhealthy</text>
+  <circle cx="530" cy="615" r="7" fill="#64748b"/>
+  <text class="small" x="544" y="620">Reserved / Draining</text>
+
+  <!-- Timeline -->
+  <rect class="panel" x="845" y="240" width="900" height="410" rx="22"/>
+  <text class="panel-title" x="872" y="278">资源占用时间线</text>
+  <text class="small" x="872" y="303">展示人、程序、预约和 drain 窗口，支持拖拽预约、续约和申请抢占。</text>
+
+  <line class="axis" x1="940" y1="350" x2="1690" y2="350"/>
+  <text class="small" x="940" y="330">09:00</text>
+  <text class="small" x="1080" y="330">12:00</text>
+  <text class="small" x="1220" y="330">15:00</text>
+  <text class="small" x="1360" y="330">18:00</text>
+  <text class="small" x="1500" y="330">21:00</text>
+  <text class="small" x="1640" y="330">00:00</text>
+
+  <text class="label" x="872" y="384">FPGA-02</text>
+  <rect x="970" y="365" width="210" height="32" rx="8" fill="#2563eb"/>
+  <text class="bar-text" x="988" y="386">人工调试 · 张三</text>
+  <rect x="1190" y="365" width="95" height="32" rx="8" fill="#94a3b8"/>
+  <text class="bar-text" x="1208" y="386">保留现场</text>
+  <rect x="1295" y="365" width="300" height="32" rx="8" fill="#f97316"/>
+  <text class="bar-text" x="1315" y="386">夜间回归 · Program</text>
+
+  <text class="label" x="872" y="444">EMU-01</text>
+  <rect x="940" y="425" width="410" height="32" rx="8" fill="#2563eb"/>
+  <text class="bar-text" x="960" y="446">P0 问题定位 · 现场保护</text>
+  <rect x="1370" y="425" width="155" height="32" rx="8" fill="#64748b"/>
+  <text class="bar-text" x="1390" y="446">预约窗口</text>
+
+  <text class="label" x="872" y="504">FPGA-03</text>
+  <rect x="940" y="485" width="260" height="32" rx="8" fill="#f97316"/>
+  <text class="bar-text" x="960" y="506">程序回归 · 可 drain</text>
+  <rect x="1210" y="485" width="120" height="32" rx="8" fill="#facc15"/>
+  <text class="bar-text" x="1230" y="506">Drain</text>
+  <rect x="1340" y="485" width="250" height="32" rx="8" fill="#2563eb"/>
+  <text class="bar-text" x="1360" y="506">人工复现 · 李四</text>
+
+  <text class="label" x="872" y="564">QEMU-A</text>
+  <rect x="940" y="545" width="520" height="32" rx="8" fill="#f97316"/>
+  <text class="bar-text" x="960" y="566">批量快速筛查 · 并发任务</text>
+
+  <rect class="button" x="872" y="590" width="126" height="36" rx="18"/>
+  <text class="button-text" x="900" y="613">新建预约</text>
+  <rect class="button" x="1014" y="590" width="126" height="36" rx="18"/>
+  <text class="button-text" x="1042" y="613">申请抢占</text>
+  <rect class="button" x="1156" y="590" width="126" height="36" rx="18"/>
+  <text class="button-text" x="1184" y="613">导出视图</text>
+
+  <!-- Queue and decisions -->
+  <rect class="panel" x="55" y="680" width="535" height="365" rx="22"/>
+  <text class="panel-title" x="82" y="718">等待队列与优先级</text>
+  <text class="small" x="82" y="743">区分 human / program，并展示动态分数和等待老化。</text>
+
+  <rect x="82" y="775" width="455" height="54" rx="12" fill="#fee2e2" stroke="#dc2626"/>
+  <text class="label" x="104" y="798">P0 · HUMAN · EMU · score 980</text>
+  <text class="small" x="104" y="818">投片阻塞问题定位，需 trace，等待 6 min</text>
+
+  <rect x="82" y="844" width="455" height="54" rx="12" fill="#ffedd5" stroke="#f97316"/>
+  <text class="label" x="104" y="867">P1 · PROGRAM · FPGA · score 760</text>
+  <text class="small" x="104" y="887">M3 夜间回归，19:00 后自动提升</text>
+
+  <rect x="82" y="913" width="455" height="54" rx="12" fill="#dbeafe" stroke="#2563eb"/>
+  <text class="label" x="104" y="936">P2 · HUMAN · FPGA · score 690</text>
+  <text class="small" x="104" y="956">人工复现，候选 FPGA-03，需 drain 当前程序</text>
+
+  <rect x="82" y="982" width="455" height="36" rx="18" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text class="small" x="104" y="1005">策略命中：白天 Human +120；FPGA 稀缺资源 Program -80；等待老化 +16</text>
+
+  <rect class="panel" x="625" y="680" width="545" height="365" rx="22"/>
+  <text class="panel-title" x="652" y="718">当前租约详情</text>
+  <text class="small" x="652" y="743">显示占用者、现场、可中断能力和可执行操作。</text>
+
+  <text class="label" x="652" y="782">资源：FPGA-03</text>
+  <text class="text" x="652" y="810">当前 owner：program / nightly-regression</text>
+  <text class="text" x="652" y="838">任务：M3 系统级回归 · task-20260614-0912</text>
+  <text class="text" x="652" y="866">租约：ACTIVE，剩余 38 min，interruptibility=DRAIN</text>
+  <text class="text" x="652" y="894">现场：已上传日志，下一 checkpoint 预计 11 min</text>
+  <text class="text" x="652" y="922">调度理由：夜间任务提前排队，白天低优先级可被人工抢占</text>
+
+  <rect class="button" x="652" y="958" width="116" height="36" rx="18"/>
+  <text class="button-text" x="684" y="981">续约</text>
+  <rect class="button" x="784" y="958" width="116" height="36" rx="18"/>
+  <text class="button-text" x="816" y="981">释放</text>
+  <rect class="button" x="916" y="958" width="138" height="36" rx="18"/>
+  <text class="button-text" x="944" y="981">Drain 抢占</text>
+
+  <rect class="panel" x="1205" y="680" width="540" height="365" rx="22"/>
+  <text class="panel-title" x="1232" y="718">健康、告警与审批</text>
+  <text class="small" x="1232" y="743">异常资源自动隔离，高风险抢占进入审批。</text>
+
+  <rect x="1232" y="775" width="455" height="54" rx="12" fill="#fee2e2" stroke="#dc2626"/>
+  <text class="label" x="1254" y="798">FPGA-04 unhealthy</text>
+  <text class="small" x="1254" y="818">心跳丢失 8 min，已从候选池移除</text>
+
+  <rect x="1232" y="844" width="455" height="54" rx="12" fill="#fef3c7" stroke="#f59e0b"/>
+  <text class="label" x="1254" y="867">抢占审批待处理</text>
+  <text class="small" x="1254" y="887">P0 人工定位请求抢占 EMU-02 程序任务</text>
+
+  <rect x="1232" y="913" width="455" height="54" rx="12" fill="#dcfce7" stroke="#16a34a"/>
+  <text class="label" x="1254" y="936">夜间空闲填充建议</text>
+  <text class="small" x="1254" y="956">19:00 后 FPGA-01 可承接 P1 长稳任务</text>
+
+  <rect class="button" x="1232" y="984" width="116" height="36" rx="18"/>
+  <text class="button-text" x="1264" y="1007">批准</text>
+  <rect class="button" x="1364" y="984" width="116" height="36" rx="18"/>
+  <text class="button-text" x="1396" y="1007">拒绝</text>
+  <rect class="button" x="1496" y="984" width="150" height="36" rx="18"/>
+  <text class="button-text" x="1525" y="1007">查看证据</text>
+
+  <text class="small" x="70" y="1105">可视化原则：一屏看清谁占用、为什么占用、还能用多久、能不能中断、下一步怎么操作。</text>
+  <text class="small" x="70" y="1130">关键交互：筛选资源、点击资源详情、拖拽预约、申请续约、申请抢占、批准/拒绝、查看调度理由和现场 artifact。</text>
+</svg>
