@@ -49,7 +49,7 @@
 - `ExecutionGraph` 是执行时 DAG 快照，后续用例标注变化不应悄悄改变正在运行的计划。
 - FPGA / EMU 节点必须关联 `ResourceRequest` 或已确认的 `ResourceLease`。
 - `PlatformExecutionResult` 失败后必须生成 `FailSnapshot`，作为后续 Issue、复跑、定位和关闭证据。
-- `FailureIssue` 关闭必须有最近一次 `CloseGateEvaluation.allowed=true`。
+- `FailureIssue` 关闭必须有最近一次 `CloseGateEvaluation.allowed=true`，并由人工最终确认关闭。
 - `AutomationRule -> RuleAgentBinding -> AgentTriggerConfig` 在配置层 1:1。
 - `RuleActivation -> AgentRun` 在运行层 1:1。
 
@@ -353,14 +353,17 @@ RuleActivation 1 -- 1 AgentRun
 
 ### 7.1 架构
 
-![用例失败分析 Issue/PR 闭环架构](./failure-analysis-issue-pr-architecture.svg)
+![结果分析模块总体架构](./result-analysis-module-architecture.svg)
 
-失败分析参考 GitHub Issue 和 PR 的协作模型：
+当前结果分析模块采用轻量 Issue 化闭环：失败执行结果进入 `ResultAnalysisIssue`，由分析 Agent 给出 `software`、`hardware`、`unknown` 三类流程路由结论；`software` 可进入修复 Agent，`hardware` 和 `unknown` 必须人工介入和确认。这里不维护 `platform/design/model/case infra/flaky/known_issue/tapeout-risk` 等细分 labels/classification，避免 AI 过度细分造成误导。
 
-- `FailureIssue` 像 GitHub Issue：title、status、severity、priority、owner、milestone、labels、timeline、duplicate、related、close criteria。
+失败分析参考 GitHub Issue 和 PR 的协作模型，但当前阶段只保留必要闭环：
+
+- `FailureIssue` 像 GitHub Issue：title、status、severity、priority、owner、milestone、timeline、duplicate、related、close criteria；labels/classification 建议只保留 `software`、`hardware`、`unknown` 三类。
 - `FixProposal` / `External PR` 像 GitHub PR：代码修复、配置修复、用例修复、平台修复、workaround、waiver。
 - `VerificationCheck` 像 PR checks：QEMU、EMU、FPGA、CI、长稳、回归切片。
-- `CloseGateEvaluation` 像 merge gate：证据、checks、owner、风险接受共同决定是否能关闭。
+- `CloseGateEvaluation` 像 merge gate：证据、checks、owner、风险接受共同决定是否允许进入人工关闭。
+
 
 ### 7.2 状态机
 
@@ -371,15 +374,15 @@ RuleActivation 1 -- 1 AgentRun
 1. `CaseExecutionNode` 失败，生成 `FailSnapshot`。
 2. `fail_snapshot.created` 触发 Triage Agent。
 3. Duplicate / Cluster Agent 判断是否追加到已有 Failure Issue。
-4. 新失败创建 Failure Issue，自动打标签、分级、推荐 owner。
+4. 新失败创建 Failure Issue，只给出 `software`、`hardware`、`unknown` 三类结论和推荐 owner。
 5. Owner 确认后进入分析，生成复现计划或定位计划。
 6. 修复产生 FixProposal 或关联外部 PR。
 7. Fix Verification Agent 生成 VerificationPlan 和 required checks。
 8. QEMU/EMU/FPGA 验证结果回写 Issue timeline。
-9. Close Gate Agent 评估是否允许关闭。
-10. 满足证据和 checks 后关闭；否则回到分析或修复状态。
+9. Close Gate Agent 只评估是否具备关闭条件，并给出阻塞原因或关闭建议。
+10. PR 合入和 Issue 关闭均由人工最终把关；满足证据和 checks 后只能进入待人工合入或待人工关闭状态，不自动合并 PR，也不自动关闭 Issue。
 
-关闭 resolution：
+关闭 resolution 是人工关闭时记录的处理结果：
 
 | Resolution | 必要条件 |
 | --- | --- |
@@ -625,7 +628,7 @@ human.resource.requested
 - QEMU precheck fail 可以跳过后续 FPGA/EMU；model unsupported 不能当作真实失败。
 - 基础 gate 失败可以阻断下游 DAG 节点。
 - 失败先形成 FailSnapshot，再进入 Issue/PR 闭环。
-- Issue 关闭必须有证据门禁，不能只靠口头确认。
+- Issue 关闭必须有证据门禁和人工最终确认，不能只靠口头确认，也不能自动关闭。
 - 规则和 Agent 触发关系在配置层和运行层都保持 1:1。
 - Artifact 大文件存 S3 / MinIO，索引和状态存 SQL。
 - Version Matrix 是执行、复跑、归因、增量回归和修复验证的共同基础。

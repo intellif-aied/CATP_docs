@@ -165,8 +165,8 @@
   <text class="state-text" x="1085" y="906">waive 需要审批</text>
 
   <rect class="state" x="1290" y="855" width="180" height="76" rx="13" stroke="#16a34a"/>
-  <text class="state-title" x="1322" y="884">Close Allowed</text>
-  <text class="state-text" x="1322" y="906">自动或人工关闭</text>
+  <text class="state-title" x="1318" y="884">Manual Gate OK</text>
+  <text class="state-text" x="1322" y="906">仅可人工关闭</text>
 
   <rect class="state" x="830" y="965" width="180" height="76" rx="13" stroke="#dc2626"/>
   <text class="state-title" x="860" y="994">Close Blocked</text>
@@ -181,5 +181,5 @@
   <path class="arrow-soft" d="M 1380 855 C 1440 690 1495 440 1550 244"/>
 
   <text class="note" x="70" y="1145">Issue 关闭方式：fixed、duplicate、known_issue、not_reproducible、waived、obsolete。除 duplicate 外都需要证据；waived 需要风险接受审批。</text>
-  <text class="note" x="70" y="1172">PR/checks 失败不会关闭 Issue，而是把 Issue 拉回分析或修复状态，并在 timeline 留下失败证据。</text>
+  <text class="note" x="70" y="1172">PR/checks 失败不会关闭 Issue；PR 合入和 Issue 关闭都必须由人最后把关。</text>
 </svg>
