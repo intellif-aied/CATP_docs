@@ -18,9 +18,9 @@
 
 ![用例执行编排二级架构](./use-case-execution-orchestration.svg)
 
-## 3. DAG 与状态机
+## 3. ExecutionGraph 与状态机
 
-![用例执行 DAG 与状态机](./use-case-execution-state-machine.svg)
+![ExecutionGraph 与用例节点状态机](./use-case-execution-state-machine.svg)
 
 ## 4. 核心设计
 
@@ -71,7 +71,7 @@
 
 ## 6. 和其他模块关系
 
-- **资源管理与调度**：用例编排生成 `CaseExecutionNode`，由执行驱动器 (Execution Driver) 定时轮询，节点 READY 后向资源调度模块发起 `ResourceRequest`，租约确认后触发执行 Agent。
+- **资源管理与调度**：用例编排生成 `ExecutionGraph` 和 `CaseExecutionNode`，执行驱动器 (Execution Driver) 监控资源状态并遍历执行图，找到资源条件满足的 READY 节点后下发任务；资源策略、抢占和独占租约仍由资源调度模块负责。
 - **事件规则 Agent 编排**：任务完成或失败后发布事件，触发失败分析、复跑、问题定位或报告 Agent。
 - **用例管理**：维护平台标注、依赖、层级、owner、风险等级。
 - **结果管理**：合并多平台执行结果，形成最终结论和准入证据。

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
   <title id="title">执行驱动器 (Execution Driver) 架构</title>
-  <desc id="desc">执行驱动器作为后台定时任务，在 ExecutionGraph 和资源调度之间建立持续的下发链路。</desc>
+  <desc id="desc">执行驱动器作为后台确定性组件，监控资源状态并遍历 ExecutionGraph，找到可执行节点后把任务下发到对应资源执行入口。</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#f8fafc"/>
@@ -37,13 +37,13 @@
 
   <rect class="page" x="0" y="0" width="1600" height="900"/>
   <text class="title" x="70" y="56">执行驱动器 (Execution Driver) 架构</text>
-  <text class="subtitle" x="70" y="86">后台定时任务：轮询资源空闲 → 规则匹配 READY 节点 → 下发 ResourceRequest → 触发执行</text>
+  <text class="subtitle" x="70" y="86">后台确定性组件：监控资源状态 → 遍历执行图 → 得到可执行节点 → 下发任务到对应资源</text>
 
   <!-- Left: ExecutionGraph -->
   <rect class="box" x="50" y="130" width="420" height="700" rx="22" stroke="#14b8a6"/>
   <rect x="75" y="155" width="200" height="65" rx="16" fill="#0f766e"/>
   <text class="box-title" x="99" y="183">ExecutionGraph</text>
-  <text class="box-subtitle" x="99" y="206">用例执行 DAG 快照</text>
+  <text class="box-subtitle" x="99" y="206">平台节点执行图快照</text>
 
   <rect class="card" x="80" y="255" width="360" height="70" rx="12" stroke="#14b8a6"/>
   <text class="card-title" x="106" y="282">CaseExecutionNode A</text>
@@ -70,36 +70,36 @@
   <rect class="card" x="545" y="255" width="510" height="80" rx="12" stroke="#2563eb"/>
   <circle cx="575" cy="295" r="16" fill="#2563eb"/>
   <text class="step-num" x="570" y="301">1</text>
-  <text class="card-title" x="605" y="282">定时轮询 ExecutionGraph</text>
-  <text class="card-text" x="605" y="306">扫描所有 READY 状态的 CaseExecutionNode</text>
-  <text class="card-text" x="605" y="324">提取节点 ID、所需资源类型、优先级</text>
+  <text class="card-title" x="605" y="282">监控资源状态 / 租约事件</text>
+  <text class="card-text" x="605" y="306">消费资源调度模块的状态快照、租约确认、拒绝原因</text>
+  <text class="card-text" x="605" y="324">不计算优先级、不做抢占策略</text>
 
   <rect class="card" x="545" y="355" width="510" height="80" rx="12" stroke="#2563eb"/>
   <circle cx="575" cy="395" r="16" fill="#2563eb"/>
   <text class="step-num" x="570" y="401">2</text>
-  <text class="card-title" x="605" y="382">检查资源可用性</text>
-  <text class="card-text" x="605" y="406">查询资源调度模块：所需资源类型是否有空闲</text>
-  <text class="card-text" x="605" y="424">FPGA/EMU 需检查独占租约状态</text>
+  <text class="card-title" x="605" y="382">遍历 ExecutionGraph</text>
+  <text class="card-text" x="605" y="406">扫描 READY 状态的 CaseExecutionNode</text>
+  <text class="card-text" x="605" y="424">确认依赖边、平台顺序和 gate 已释放</text>
 
   <rect class="card" x="545" y="455" width="510" height="80" rx="12" stroke="#2563eb"/>
   <circle cx="575" cy="495" r="16" fill="#2563eb"/>
   <text class="step-num" x="570" y="501">3</text>
-  <text class="card-title" x="605" y="482">下发 ResourceRequest</text>
-  <text class="card-text" x="605" y="506">条件满足 → 向资源调度模块发起 ResourceRequest</text>
-  <text class="card-text" x="605" y="524">条件不满足 → 记录等待原因和等待时长</text>
+  <text class="card-title" x="605" y="482">识别可执行节点</text>
+  <text class="card-text" x="605" y="506">匹配节点资源需求与可用资源 / confirmed lease</text>
+  <text class="card-text" x="605" y="524">不满足时只记录等待原因和等待时长</text>
 
   <rect class="card" x="545" y="555" width="510" height="80" rx="12" stroke="#2563eb"/>
   <circle cx="575" cy="595" r="16" fill="#2563eb"/>
   <text class="step-num" x="570" y="601">4</text>
-  <text class="card-title" x="605" y="582">触发执行 Agent</text>
-  <text class="card-text" x="605" y="606">ResourceLease granted → 通知执行 Agent 开始执行</text>
+  <text class="card-title" x="605" y="582">下发 ExecutionTask</text>
+  <text class="card-text" x="605" y="606">资源 / 租约确认 → 下发到对应资源执行入口</text>
   <text class="card-text" x="605" y="624">执行完成后回写 CaseExecutionNode 状态</text>
 
   <rect class="card" x="545" y="660" width="510" height="95" rx="12" stroke="#f59e0b"/>
   <text class="card-title" x="575" y="687" fill="#d97706">关键约束</text>
-  <text class="card-text" x="575" y="711">· 不绕过资源调度模块直接分配资源</text>
-  <text class="card-text" x="575" y="731">· 每次下发记录：触发时间、节点 ID、资源需求、等待原因</text>
-  <text class="card-text" x="575" y="751">· FPGA / EMU 节点必须经过独占租约检查</text>
+  <text class="card-text" x="575" y="711">· 不选择用例、不分配资源、不执行脚本</text>
+  <text class="card-text" x="575" y="731">· 每次下发记录：触发时间、节点 ID、资源/租约来源、幂等键</text>
+  <text class="card-text" x="575" y="751">· FPGA / EMU 节点必须经过独占租约确认</text>
 
   <!-- Right: Resource Scheduler + Execution Agent -->
   <rect class="box" x="1130" y="130" width="420" height="700" rx="22" stroke="#16a34a"/>
@@ -133,16 +133,16 @@
 
   <!-- Arrows -->
   <path class="arrow-blue" d="M 440 290 C 480 290 500 290 545 290"/>
-  <text class="label" x="462" y="280">轮询 READY 节点</text>
+  <text class="label" x="462" y="280">遍历 READY 节点</text>
 
   <path class="arrow-blue" d="M 1055 495 C 1095 495 1115 305 1160 305"/>
-  <text class="label" x="1082" y="390">下发 ResourceRequest</text>
+  <text class="label" x="1082" y="390">请求/读取资源状态</text>
 
   <path class="arrow-dash" d="M 1160 430 C 1120 430 1100 530 1055 530"/>
-  <text class="label" x="1078" y="488">Lease granted / 拒绝</text>
+  <text class="label" x="1078" y="488">资源状态 / Lease 结果</text>
 
   <path class="arrow-blue" d="M 1055 595 C 1095 595 1115 585 1160 585"/>
-  <text class="label" x="1082" y="580">触发执行</text>
+  <text class="label" x="1082" y="580">下发任务</text>
 
   <path class="arrow-dash" d="M 1160 585 C 1120 585 500 585 480 585 C 460 585 460 500 440 500"/>
   <text class="label" x="800" y="570">结果回写 CaseExecutionNode</text>
@@ -152,5 +152,5 @@
   <text class="note" x="100" y="873">实线箭头 = 主动调用</text>
   <text class="note" x="350" y="873">虚线箭头 = 回调 / 回写</text>
   <text class="note" x="600" y="873">蓝色 = 执行驱动器核心链路</text>
-  <text class="note" x="900" y="873">执行驱动器不是 Agent，不参与业务决策，是确定性调度组件</text>
+  <text class="note" x="900" y="873">执行驱动器不是 Agent，不决定资源策略，是资源监控 + 图遍历 + 下发组件</text>
 </svg>
