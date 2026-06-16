@@ -262,6 +262,11 @@ ExecutionGraph + Resource State / ResourceLease
 - 每次下发必须记录触发时间、节点 ID、资源需求、资源/租约来源、等待原因和幂等键。
 - FPGA / EMU 节点必须经过资源调度模块的独占租约确认，不能只因为图节点 `READY` 就直接启动执行。
 
+### 5.4 里程碑执行阶段待确认问题
+
+- 执行测试的流程是直接在qume、fgpa上执行测试命令？还是存在复杂的类jinkens 测试流水线？
+- 执行测试的命令目前在tst仓，是否后续同步到平台进行登记？
+
 ## 6. 用例失败分析 Issue/PR 闭环
 
 > 详细设计：`failure-analysis-issue-pr.md`
