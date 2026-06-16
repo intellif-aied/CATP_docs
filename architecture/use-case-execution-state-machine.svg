@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1220" viewBox="0 0 1800 1220" role="img" aria-labelledby="title desc">
-  <title id="title">用例执行 DAG 与状态机</title>
-  <desc id="desc">展示用例执行的 DAG、平台节点状态机、失败阻断和 QEMU 预筛失败跳过 EMU/FPGA 的策略。</desc>
+  <title id="title">ExecutionGraph 与用例节点状态机</title>
+  <desc id="desc">展示 ExecutionGraph 的平台节点 DAG、CaseExecutionNode 状态机、失败阻断、QEMU 预筛跳过策略，以及 READY 节点如何等待执行驱动器和资源确认。</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#f8fafc"/>
@@ -32,13 +32,13 @@
   </defs>
 
   <rect class="page" width="1800" height="1220"/>
-  <text class="title" x="70" y="58">用例执行 DAG 与状态机</text>
-  <text class="subtitle" x="70" y="90">执行顺序由用例依赖和平台路线共同决定；基础 gate 失败可阻断下游；QEMU 预筛失败可跳过 EMU/FPGA。</text>
+  <text class="title" x="70" y="58">ExecutionGraph 与用例节点状态机</text>
+  <text class="subtitle" x="70" y="90">执行顺序由用例依赖和平台路线共同决定；READY 节点不会自行执行，要等待驱动器遍历图并确认资源条件。</text>
 
   <!-- DAG panel -->
   <rect class="panel" x="55" y="130" width="1690" height="520" rx="22" stroke="#16a34a"/>
   <rect class="head" x="82" y="156" width="230" height="72" rx="18" fill="#15803d"/>
-  <text class="head-title" x="106" y="187">执行 DAG 示例</text>
+  <text class="head-title" x="106" y="187">ExecutionGraph 示例</text>
   <text class="head-sub" x="106" y="211">用例层级 + 平台路线</text>
 
   <rect x="90" y="270" width="150" height="36" rx="18" fill="#0ea5e9"/>
@@ -113,7 +113,7 @@
 
   <rect class="node" x="730" y="750" width="145" height="64" rx="13" stroke="#f97316"/>
   <text class="node-title" x="760" y="776">READY</text>
-  <text class="node-text" x="756" y="797">可调度资源</text>
+  <text class="node-text" x="756" y="797">等待驱动器下发</text>
 
   <rect class="node" x="920" y="750" width="145" height="64" rx="13" stroke="#f97316"/>
   <text class="node-title" x="949" y="776">RUNNING</text>
@@ -151,7 +151,7 @@
 
   <text class="label" x="1135" y="690">pass opens downstream</text>
   <text class="label" x="1125" y="895">fail applies gate policy</text>
-  <text class="label" x="720" y="1035">依赖失败不是执行失败，而是 blocked；预筛失败导致后续平台节点 skipped。</text>
+  <text class="label" x="720" y="1035">依赖失败不是执行失败，而是 blocked；READY 节点由 Execution Driver 在资源满足时下发。</text>
 
   <text class="note" x="70" y="1145">状态差异：FAILED 表示本平台实际执行失败；SKIPPED 表示策略决定不用执行；BLOCKED 表示上游 gate 失败导致无法开始。</text>
   <text class="note" x="70" y="1172">用例最终结论需要合并所有平台节点，并说明结论来源：model / EMU / FPGA。</text>

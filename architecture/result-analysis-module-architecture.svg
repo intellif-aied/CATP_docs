@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120" role="img" aria-labelledby="title desc">
+  <title id="title">结果分析模块总体架构</title>
+  <desc id="desc">用例执行失败重试后创建结果分析 Issue，分析 Agent 输出 software、hardware、unknown 三类结论；软件问题进入修复 Agent 循环，硬件和 unknown 通知人工，最终均由人工关闭 Issue。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#334155"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 30px 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 15px 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; fill: #475569; }
+      .lane { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .lane-title { font: 700 17px 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; fill: #1e293b; }
+      .node { fill: #ffffff; stroke: #2563eb; stroke-width: 2; rx: 14; }
+      .node-soft { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 14; }
+      .node-warn { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; rx: 14; }
+      .node-ok { fill: #f0fdf4; stroke: #16a34a; stroke-width: 2; rx: 14; }
+      .node-human { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; rx: 14; }
+      .decision { fill: #ffffff; stroke: #0f766e; stroke-width: 2; }
+      .text { font: 700 16px 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; fill: #0f172a; }
+      .small { font: 13px 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; fill: #475569; }
+      .label { font: 13px 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 2; marker-end: url(#arrow); }
+      .arrow-soft { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 6 5; marker-end: url(#arrow); }
+      .note { font: 15px 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; fill: #334155; }
+      .tag { font: 700 13px 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; fill: #ffffff; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1120"/>
+  <text class="title" x="60" y="58">结果分析模块总体架构</text>
+  <text class="subtitle" x="60" y="88">来源：result_analysis_module_design.md，总体流程聚焦三类结论、自动修复上限、通知人工和人工关闭。</text>
+
+  <rect class="lane" x="50" y="125" width="300" height="855" rx="20"/>
+  <text class="lane-title" x="75" y="160">用例执行模块</text>
+  <rect class="node-soft" x="85" y="195" width="230" height="76" rx="14"/>
+  <text class="text" x="130" y="226">里程碑执行</text>
+  <text class="small" x="128" y="249">触发一批用例运行</text>
+
+  <rect class="node" x="85" y="315" width="230" height="76" rx="14"/>
+  <text class="text" x="130" y="346">用例执行模块</text>
+  <text class="small" x="112" y="369">执行、产物归档、结果保存</text>
+
+  <polygon class="decision" points="200,438 302,500 200,562 98,500"/>
+  <text class="text" x="140" y="494">是否通过</text>
+  <text class="small" x="145" y="516">通过则结束</text>
+
+  <rect class="node-warn" x="85" y="620" width="230" height="76" rx="14"/>
+  <text class="text" x="118" y="651">执行模块重试</text>
+  <text class="small" x="120" y="674">按策略重试失败用例</text>
+
+  <polygon class="decision" points="200,735 302,797 200,859 98,797"/>
+  <text class="text" x="122" y="791">重试后是否通过</text>
+  <text class="small" x="145" y="813">仍失败才建 issue</text>
+
+  <rect class="lane" x="385" y="125" width="305" height="855" rx="20"/>
+  <text class="lane-title" x="410" y="160">结果分析 Issue</text>
+  <rect class="node-soft" x="425" y="245" width="225" height="82" rx="14"/>
+  <text class="text" x="454" y="278">ResultAnalysisIssue.add</text>
+  <text class="small" x="474" y="302">一条失败结果一个 active issue</text>
+
+  <rect class="node" x="425" y="380" width="225" height="82" rx="14"/>
+  <text class="text" x="468" y="413">result_analysis_issue</text>
+  <text class="small" x="464" y="437">保存失败快照、结论和状态</text>
+
+  <rect class="node" x="425" y="515" width="225" height="82" rx="14"/>
+  <text class="text" x="480" y="548">流程时间线</text>
+  <text class="small" x="470" y="572">分析、修复、通知、人工关闭</text>
+
+  <rect class="node" x="425" y="650" width="225" height="82" rx="14"/>
+  <text class="text" x="468" y="683">result-analysis 队列</text>
+  <text class="small" x="474" y="707">异步触发分析 Worker</text>
+
+  <rect class="lane" x="725" y="125" width="355" height="855" rx="20"/>
+  <text class="lane-title" x="750" y="160">分析 Worker / Agent</text>
+  <rect class="node-soft" x="770" y="205" width="265" height="78" rx="14"/>
+  <text class="text" x="826" y="236">结果分析 Worker</text>
+  <text class="small" x="814" y="260">构造输入快照并调用 Agent</text>
+
+  <rect class="node" x="770" y="330" width="265" height="78" rx="14"/>
+  <text class="text" x="840" y="361">分析轮 1..5</text>
+  <text class="small" x="824" y="385">最多 5 轮自动分析</text>
+
+  <rect class="node" x="770" y="455" width="265" height="78" rx="14"/>
+  <text class="text" x="840" y="486">分析 Agent</text>
+  <text class="small" x="800" y="510">生成分析记录、证据和修复方向</text>
+
+  <polygon class="decision" points="902,590 1028,665 902,740 776,665"/>
+  <text class="text" x="850" y="652">分析结论</text>
+  <text class="small" x="812" y="677">software / hardware / unknown</text>
+
+  <rect x="784" y="785" width="100" height="30" rx="15" fill="#2563eb"/>
+  <text class="tag" x="804" y="806">software</text>
+  <rect x="895" y="785" width="100" height="30" rx="15" fill="#ea580c"/>
+  <text class="tag" x="913" y="806">hardware</text>
+  <rect x="1006" y="785" width="92" height="30" rx="15" fill="#64748b"/>
+  <text class="tag" x="1024" y="806">unknown</text>
+
+  <rect class="lane" x="1115" y="125" width="230" height="855" rx="20"/>
+  <text class="lane-title" x="1140" y="160">软件修复闭环</text>
+  <rect class="node-soft" x="1140" y="235" width="180" height="80" rx="14"/>
+  <text class="text" x="1170" y="267">修复尝试 1..3</text>
+  <text class="small" x="1172" y="291">每轮最多 3 次</text>
+
+  <rect class="node" x="1140" y="365" width="180" height="80" rx="14"/>
+  <text class="text" x="1175" y="397">修复 Agent</text>
+  <text class="small" x="1164" y="421">patch / commit / log</text>
+
+  <polygon class="decision" points="1230,500 1324,560 1230,620 1136,560"/>
+  <text class="text" x="1172" y="554">修复是否通过</text>
+  <text class="small" x="1162" y="576">失败物料回灌下一轮</text>
+
+  <rect class="node-ok" x="1140" y="690" width="180" height="80" rx="14"/>
+  <text class="text" x="1162" y="722">创建 PR / commit</text>
+  <text class="small" x="1174" y="746">等待人工确认</text>
+
+  <rect class="lane" x="1380" y="125" width="170" height="855" rx="20"/>
+  <text class="lane-title" x="1405" y="160">人工收口</text>
+  <rect class="node-human" x="1395" y="255" width="140" height="78" rx="14"/>
+  <text class="text" x="1428" y="286">通知人工</text>
+  <text class="small" x="1418" y="310">硬件 / unknown</text>
+
+  <rect class="node-human" x="1395" y="420" width="140" height="78" rx="14"/>
+  <text class="text" x="1418" y="451">等待人工关闭</text>
+  <text class="small" x="1418" y="475">不自动关闭</text>
+
+  <rect class="node-human" x="1395" y="585" width="140" height="78" rx="14"/>
+  <text class="text" x="1418" y="616">人工关闭 issue</text>
+  <text class="small" x="1418" y="640">原因、评论、证据</text>
+
+  <rect class="node-human" x="1395" y="750" width="140" height="78" rx="14"/>
+  <text class="text" x="1418" y="781">关闭流程记录</text>
+  <text class="small" x="1416" y="805">closedBy / closedAt</text>
+
+  <path class="arrow" d="M200 271 L200 310"/>
+  <path class="arrow" d="M200 391 L200 433"/>
+  <path class="arrow" d="M200 562 L200 615"/>
+  <text class="label" x="232" y="592">失败</text>
+  <path class="arrow" d="M200 696 L200 730"/>
+  <path class="arrow" d="M302 797 C350 797 366 286 420 286"/>
+  <text class="label" x="324" y="780">仍失败</text>
+  <path class="arrow-soft" d="M302 500 C350 500 350 1060 120 1060"/>
+  <text class="label" x="108" y="1048">通过：结束，不创建结果分析 issue</text>
+  <path class="arrow-soft" d="M302 797 C350 960 350 1060 120 1060"/>
+
+  <path class="arrow" d="M538 327 L538 375"/>
+  <path class="arrow" d="M538 462 L538 510"/>
+  <path class="arrow" d="M538 597 L538 645"/>
+  <path class="arrow" d="M650 691 C690 691 710 244 765 244"/>
+  <path class="arrow" d="M902 283 L902 325"/>
+  <path class="arrow" d="M902 408 L902 450"/>
+  <path class="arrow" d="M902 533 L902 585"/>
+
+  <path class="arrow" d="M1028 665 C1080 665 1080 275 1135 275"/>
+  <text class="label" x="1045" y="642">软件问题</text>
+  <path class="arrow" d="M1230 315 L1230 360"/>
+  <path class="arrow" d="M1230 445 L1230 495"/>
+  <path class="arrow-soft" d="M1136 560 C1085 560 1085 370 1040 370"/>
+  <text class="label" x="1056" y="536">失败且未达上限：继续修复 / 回灌</text>
+  <path class="arrow" d="M1230 620 L1230 685"/>
+  <text class="label" x="1252" y="656">通过</text>
+
+  <path class="arrow" d="M1028 665 C1180 665 1250 294 1390 294"/>
+  <text class="label" x="1128" y="320">硬件问题 / unknown</text>
+  <path class="arrow" d="M1320 730 C1360 730 1360 459 1390 459"/>
+  <path class="arrow" d="M1465 333 L1465 415"/>
+  <path class="arrow" d="M1465 498 L1465 580"/>
+  <path class="arrow" d="M1465 663 L1465 745"/>
+
+  <rect x="60" y="1010" width="1480" height="64" rx="16" fill="#ffffff" stroke="#cbd5e1"/>
+  <text class="note" x="84" y="1038">约束：AI 只做 software / hardware / unknown 三类路由判断；除软件自动修复闭环外，硬件、unknown、达到上限、PR 创建失败等路径都进入人工确认。</text>
+  <text class="note" x="84" y="1064">PR 合入和 Issue 关闭是人工动作；系统只沉淀证据、流程记录和关闭建议，不自动合并 PR，也不自动关闭 Issue。</text>
+</svg>
