@@ -13,111 +13,71 @@
 
 最终平台不只是一个任务系统，也不是单纯的 Agent 执行器，而是一个以业务对象为中心、以事件为驱动、以 Agent 为执行能力、以可视化和审计为保障的自动化验证平台。
 
-## 2. 总览图
-
-### 2.1 端到端闭环
-
-![芯片软件验证自动化平台端到端闭环](./final-end-to-end-flow.svg)
-
-核心链路：
-
-```text
-需求 / PR / 人工计划 / 里程碑
-  -> EventRecord
-  -> AutomationRule
-  -> RuleActivation
-  -> AgentRun
-  -> ExecutionPlan / ResourceRequest / FailureIssue / Report
-  -> 新事件
-```
-
-每次自动化动作都必须能回答：
-
-- 这个动作由哪个事件触发。
-- 哪条规则命中，命中条件是什么。
-- 哪个 Agent 版本执行，使用了哪些 MCP、Skill、Subagent。
-- 读了哪些上下文，产生了哪些证据。
-- 是否需要人工审批或人工确认。
-- 输出最终写入了哪个业务对象。
-
-### 2.2 核心领域数据关系
-
-![芯片软件验证自动化平台核心领域数据关系](./final-domain-data-map.svg)
-
-这张图用于指导数据库、API 和事件边界。核心约束如下：
-
-- `ExecutionGraph` 是执行时 DAG 快照，后续用例标注变化不应悄悄改变正在运行的计划。
-- FPGA / EMU 节点必须关联 `ResourceRequest` 或已确认的 `ResourceLease`。
-- `PlatformExecutionResult` 失败后必须生成 `FailSnapshot`，作为后续 Issue、复跑、定位和关闭证据。
-- `FailureIssue` 关闭必须有最近一次 `CloseGateEvaluation.allowed=true`。
-- `AutomationRule -> RuleAgentBinding -> AgentTriggerConfig` 在配置层 1:1。
-- `RuleActivation -> AgentRun` 在运行层 1:1。
-
-## 3. 五层架构
+## 2. 五层架构
 
 ![芯片软件验证自动化平台五层架构](./chip-validation-platform-layered.svg)
 
-### 3.1 第一层：基础资源与存储层
+### 2.1 第一层：基础资源与存储层
 
-| 模块 | 职责 | 关键约束 |
-| --- | --- | --- |
-| SQL DB | 保存需求、用例、资源、计划、任务、Issue、PR、Agent、规则等业务元数据 | 状态变化必须可追溯；大日志不进 SQL |
-| S3 / MinIO | 保存日志、trace、dump、波形、报告、最小复现包 | 关键失败现场需要 checksum、权限和保留策略 |
-| Redis | 队列缓存、分布式锁、资源心跳、短期状态 | 锁必须有 owner、TTL、续约和幂等键 |
-| EMU | 中后期 RTL 行为验证、复杂状态、trace 定位 | 稀缺、不可虚拟化，默认独占租约 |
-| FPGA | 真实硬件软件栈验证、长稳、系统级闭环 | 真实环境依赖强，抢占需审批和现场保护 |
-| CPU Farm | 编译、QEMU、日志分析、报告生成 | 区分交互式、批处理和高内存节点 |
-| QEMU + cmodel / amodel | 快速 bring-up、功能回归、预筛、最小复现 | model unsupported 不能直接视为真实失败 |
-| Git Repo / CI | PR、commit、branch、build、binary、image 来源 | 每次执行必须绑定完整版本矩阵 |
+| 模块                   | 职责                                                                 | 关键约束                                  |
+| ---------------------- | -------------------------------------------------------------------- | ----------------------------------------- |
+| SQL DB                 | 保存需求、用例、资源、计划、任务、Issue、PR、Agent、规则等业务元数据 | 状态变化必须可追溯；大日志不进 SQL        |
+| S3 / MinIO             | 保存日志、trace、dump、波形、报告、最小复现包                        | 关键失败现场需要 checksum、权限和保留策略 |
+| Redis                  | 队列缓存、分布式锁、资源心跳、短期状态                               | 锁必须有 owner、TTL、续约和幂等键         |
+| EMU                    | 中后期 RTL 行为验证、复杂状态、trace 定位                            | 稀缺、不可虚拟化，默认独占租约            |
+| FPGA                   | 真实硬件软件栈验证、长稳、系统级闭环                                 | 真实环境依赖强，抢占需审批和现场保护      |
+| CPU Farm               | 编译、QEMU、日志分析、报告生成                                       | 区分交互式、批处理和高内存节点            |
+| QEMU + cmodel / amodel | 快速 bring-up、功能回归、预筛、最小复现                              | model unsupported 不能直接视为真实失败    |
+| Git Repo / CI          | PR、commit、branch、build、binary、image 来源                        | 每次执行必须绑定完整版本矩阵              |
 
-### 3.2 第二层：平台组件与能力层
+### 2.2 第二层：平台组件与能力层
 
-| 模块 | 职责 |
-| --- | --- |
+| 模块                 | 职责                                                 |
+| -------------------- | ---------------------------------------------------- |
 | K8s / Worker Runtime | 运行 Worker、Agent Runtime、日志解析、报告、周期任务 |
-| Queue / Lock | 优先级队列、资源互斥、Agent 冲突仲裁、幂等去重 |
-| Log Pipeline | 收集、索引、解析执行日志、资源日志、Agent Trace |
-| MCP 组件 | 管理 MCP Server、Tool Gateway、工具授权、调用审计 |
-| Skill 组件 | 管理 Skill 包、参数、依赖、评审、灰度和发布 |
-| Subagent 组件 | 管理子 Agent 角色、上下文隔离、协作拓扑和汇总策略 |
-| Artifacts 组件 | 管理日志、trace、dump、波形、报告、最小复现脚本索引 |
-| Observability | 平台指标、资源指标、任务 SLA、Agent 成本和质量 |
-| Secret / Access | 凭据、权限、危险动作审批、越权防护 |
+| Queue / Lock         | 优先级队列、资源互斥、Agent 冲突仲裁、幂等去重       |
+| Log Pipeline         | 收集、索引、解析执行日志、资源日志、Agent Trace      |
+| MCP 组件             | 管理 MCP Server、Tool Gateway、工具授权、调用审计    |
+| Skill 组件           | 管理 Skill 包、参数、依赖、评审、灰度和发布          |
+| Subagent 组件        | 管理子 Agent 角色、上下文隔离、协作拓扑和汇总策略    |
+| Artifacts 组件       | 管理日志、trace、dump、波形、报告、最小复现脚本索引  |
+| Observability        | 平台指标、资源指标、任务 SLA、Agent 成本和质量       |
+| Secret / Access      | 凭据、权限、危险动作审批、越权防护                   |
 
-### 3.3 第三层：管理模块与规则编排层
+### 2.3 第三层：管理模块与规则编排层
 
-| 模块 | 核心职责 |
-| --- | --- |
-| 需求管理 | 需求拆解、覆盖关系、变更影响、准入项追踪 |
-| 用例管理 | 用例库、平台适配、版本、owner、风险等级、历史质量 |
-| 资源管理 | FPGA、EMU、CPU、QEMU 状态、能力、健康、占用、预约 |
-| 里程碑管理 | 阶段门、投片准入、完成度、风险 Top、延期影响 |
-| 执行计划管理 | 全量、冒烟、增量、夜间、专项定位计划 |
-| 执行任务管理 | 排队、调度、执行、采集、复跑、迁移、暂停、取消 |
-| Issue 管理 | 失败归因、缺陷闭环、已知问题、owner 分派、风险升级 |
-| PR 管理 | PR、commit、CI、变更影响、修复验证、准入建议 |
-| 规则引擎 | 准入规则、调度策略、复跑策略、风险策略、审批策略 |
-| 事件驱动与流程编排 | 事件总线、状态机、DAG、SLA、补偿流程 |
+| 模块               | 核心职责                                           |
+| ------------------ | -------------------------------------------------- |
+| 需求管理           | 需求拆解、覆盖关系、变更影响、准入项追踪           |
+| 用例管理           | 用例库、平台适配、版本、owner、风险等级、历史质量  |
+| 资源管理           | FPGA、EMU、CPU、QEMU 状态、能力、健康、占用、预约  |
+| 里程碑管理         | 阶段门、投片准入、完成度、风险 Top、延期影响       |
+| 执行计划管理       | 全量、冒烟、增量、夜间、专项定位计划               |
+| 执行任务管理       | 排队、调度、执行、采集、复跑、迁移、暂停、取消     |
+| Issue 管理         | 失败归因、缺陷闭环、已知问题、owner 分派、风险升级 |
+| PR 管理            | PR、commit、CI、变更影响、修复验证、准入建议       |
+| 规则引擎           | 准入规则、调度策略、复跑策略、风险策略、审批策略   |
+| 事件驱动与流程编排 | 事件总线、状态机、DAG、SLA、补偿流程               |
 
-### 3.4 第四层：Agent 层
+### 2.4 第四层：Agent 层
 
 Agent 必须有明确目的，不能泛化成万能 Agent。所有 Agent 通过平台 API、规则引擎、MCP、Skill 和 Subagent 工作，不能绕过平台直接修改核心状态。
 
-| Agent | 触发来源 | 输出 |
-| --- | --- | --- |
-| 资源调度 Agent | 计划创建、资源释放、租约到期、P0 申请 | 分配建议、抢占建议、预约建议、drain 建议 |
-| 用例选择 Agent | 需求变更、PR 更新、版本发布、里程碑门禁 | 冒烟、增量、全量、风险加权用例集合 |
-| 执行 Agent | CaseExecutionNode READY、ResourceLease granted | Result JSON、artifact 索引、资源状态回写 |
-| 失败分析 Agent | FailSnapshot created | 失败摘要、归因分类、置信度、owner 建议 |
-| Duplicate / Cluster Agent | FailSnapshot created | 追加已有 Issue 或创建新 Issue 建议 |
-| 复跑 Agent | 失败分析结果、infra fail、flaky 判断 | 同平台、换资源、跨平台、失败子集复跑计划 |
-| 问题定位 Agent | 稳定失败、Owner 请求、P0 定位 | trace、二分、最小复现、跨平台对比计划 |
-| Fix Verification Agent | FixProposal opened、PR updated | VerificationPlan、required checks |
-| Close Gate Agent | VerificationPlan completed、Issue close requested | 是否允许关闭、阻塞原因、证据检查 |
-| 报告 Agent | 夜间计划完成、里程碑风险变化 | 日报、周报、夜间摘要、投片风险 Top |
-| 治理守护 Agent | 高风险工具调用、危险资源动作 | 允许、拒绝、需要审批、需要人工确认 |
+| Agent                     | 触发来源                                          | 输出                                     |
+| ------------------------- | ------------------------------------------------- | ---------------------------------------- |
+| 资源调度 Agent            | 计划创建、资源释放、租约到期、P0 申请             | 分配建议、抢占建议、预约建议、drain 建议 |
+| 用例选择 Agent            | 需求变更、PR 更新、版本发布、里程碑门禁           | 冒烟、增量、全量、风险加权用例集合       |
+| 执行 Agent                | CaseExecutionNode READY、ResourceLease granted    | Result JSON、artifact 索引、资源状态回写 |
+| 失败分析 Agent            | FailSnapshot created                              | 失败摘要、归因分类、置信度、owner 建议   |
+| Duplicate / Cluster Agent | FailSnapshot created                              | 追加已有 Issue 或创建新 Issue 建议       |
+| 复跑 Agent                | 失败分析结果、infra fail、flaky 判断              | 同平台、换资源、跨平台、失败子集复跑计划 |
+| 问题定位 Agent            | 稳定失败、Owner 请求、P0 定位                     | trace、二分、最小复现、跨平台对比计划    |
+| Fix Verification Agent    | FixProposal opened、PR updated                    | VerificationPlan、required checks        |
+| Close Gate Agent          | VerificationPlan completed、Issue close requested | 是否允许关闭、阻塞原因、证据检查         |
+| 报告 Agent                | 夜间计划完成、里程碑风险变化                      | 日报、周报、夜间摘要、投片风险 Top       |
+| 治理守护 Agent            | 高风险工具调用、危险资源动作                      | 允许、拒绝、需要审批、需要人工确认       |
 
-#### 3.4.1 执行驱动器 (Execution Driver)
+#### 2.4.1 执行驱动器 (Execution Driver)
 
 ![执行驱动器架构](./execution-driver-architecture.svg)
 
@@ -156,18 +116,61 @@ ExecutionGraph（用例执行编排）
 - 每次下发必须记录：触发时间、节点 ID、资源需求、等待原因（若未下发）。
 - FPGA / EMU 节点的下发必须经过资源调度模块的独占租约检查。
 
-### 3.5 第五层：展示与协同层
+### 2.5 第五层：展示与协同层
 
-| 页面 | 核心能力 |
-| --- | --- |
-| Dashboard | 资源利用率、任务吞吐、失败趋势、投片准入、里程碑风险 |
-| 验证工作台 | 需求、用例、计划、任务、Issue、PR 的日常操作入口 |
-| 资源可视化 | 资源地图、时间线、队列、租约详情、健康、调度解释、审批 |
-| 用例执行视图 | 平台映射矩阵、执行 DAG、跨平台结果矩阵、跳过和阻断原因 |
+| 页面          | 核心能力                                                        |
+| ------------- | --------------------------------------------------------------- |
+| Dashboard     | 资源利用率、任务吞吐、失败趋势、投片准入、里程碑风险            |
+| 验证工作台    | 需求、用例、计划、任务、Issue、PR 的日常操作入口                |
+| 资源可视化    | 资源地图、时间线、队列、租约详情、健康、调度解释、审批          |
+| 用例执行视图  | 平台映射矩阵、执行 DAG、跨平台结果矩阵、跳过和阻断原因          |
 | Failure Board | 类 GitHub Project 的失败看板、Issue 详情、PR/checks、Close Gate |
-| Agent Studio | Agent、MCP、Skill、Subagent、工具权限、运行记录和版本发布 |
-| 报告与通知 | 日报、周报、夜间执行摘要、风险提醒、阻塞升级 |
-| 管理与配置 | 用户、角色、项目空间、字典、规则、资源、外部集成 |
+| Agent Studio  | Agent、MCP、Skill、Subagent、工具权限、运行记录和版本发布       |
+| 报告与通知    | 日报、周报、夜间执行摘要、风险提醒、阻塞升级                    |
+| 管理与配置    | 用户、角色、项目空间、字典、规则、资源、外部集成                |
+
+
+
+## 3. 总览图
+
+### 3.1 端到端闭环
+
+![芯片软件验证自动化平台端到端闭环](./final-end-to-end-flow.svg)
+
+核心链路：
+
+```text
+需求 / PR / 人工计划 / 里程碑
+  -> EventRecord
+  -> AutomationRule
+  -> RuleActivation
+  -> AgentRun
+  -> ExecutionPlan / ResourceRequest / FailureIssue / Report
+  -> 新事件
+```
+
+每次自动化动作都必须能回答：
+
+- 这个动作由哪个事件触发。
+- 哪条规则命中，命中条件是什么。
+- 哪个 Agent 版本执行，使用了哪些 MCP、Skill、Subagent。
+- 读了哪些上下文，产生了哪些证据。
+- 是否需要人工审批或人工确认。
+- 输出最终写入了哪个业务对象。
+
+### 3.2 核心领域数据关系
+
+![芯片软件验证自动化平台核心领域数据关系](./final-domain-data-map.svg)
+
+这张图用于指导数据库、API 和事件边界。核心约束如下：
+
+- `ExecutionGraph` 是执行时 DAG 快照，后续用例标注变化不应悄悄改变正在运行的计划。
+- FPGA / EMU 节点必须关联 `ResourceRequest` 或已确认的 `ResourceLease`。
+- `PlatformExecutionResult` 失败后必须生成 `FailSnapshot`，作为后续 Issue、复跑、定位和关闭证据。
+- `FailureIssue` 关闭必须有最近一次 `CloseGateEvaluation.allowed=true`。
+- `AutomationRule -> RuleAgentBinding -> AgentTriggerConfig` 在配置层 1:1。
+- `RuleActivation -> AgentRun` 在运行层 1:1。
+
 
 ## 4. 资源管理与调度
 
@@ -195,12 +198,12 @@ ExecutionGraph（用例执行编排）
 
 中断语义：
 
-| 类型 | 语义 | 适用场景 |
-| --- | --- | --- |
-| `DRAIN` | 不接新阶段，运行到安全退出点后释放 | 长回归、阶段性测试 |
+| 类型           | 语义                                  | 适用场景                           |
+| -------------- | ------------------------------------- | ---------------------------------- |
+| `DRAIN`      | 不接新阶段，运行到安全退出点后释放    | 长回归、阶段性测试                 |
 | `CHECKPOINT` | 保存现场、进度、命令、artifact 后释放 | 可恢复任务、QEMU/CPU/部分 EMU 流程 |
-| `MIGRATE` | checkpoint 后换资源继续 | CPU/QEMU 或兼容资源 |
-| `FORCE` | 强制终止 | 只允许 P0 + 审批 + 现场保护 |
+| `MIGRATE`    | checkpoint 后换资源继续               | CPU/QEMU 或兼容资源                |
+| `FORCE`      | 强制终止                              | 只允许 P0 + 审批 + 现场保护        |
 
 FPGA/EMU 如果正在人工 debug 或失败现场保护，默认不抢占，除非 owner 释放或审批通过。
 
@@ -323,14 +326,14 @@ RuleActivation 1 -- 1 AgentRun
 
 关闭 resolution：
 
-| Resolution | 必要条件 |
-| --- | --- |
-| `fixed` | 修复 PR merged 或 fix proposal approved；required checks passed；owner approved |
-| `duplicate` | 有主 Issue 链接 |
-| `known_issue` | 有已知问题链接和影响范围 |
-| `waived` | 有风险接受审批 |
-| `not_reproducible` | 多次复跑不复现且保存证据 |
-| `obsolete` | 版本或用例已废弃，有变更证据 |
+| Resolution           | 必要条件                                                                        |
+| -------------------- | ------------------------------------------------------------------------------- |
+| `fixed`            | 修复 PR merged 或 fix proposal approved；required checks passed；owner approved |
+| `duplicate`        | 有主 Issue 链接                                                                 |
+| `known_issue`      | 有已知问题链接和影响范围                                                        |
+| `waived`           | 有风险接受审批                                                                  |
+| `not_reproducible` | 多次复跑不复现且保存证据                                                        |
+| `obsolete`         | 版本或用例已废弃，有变更证据                                                    |
 
 ## 8. 跨模块协议
 
@@ -338,17 +341,17 @@ RuleActivation 1 -- 1 AgentRun
 
 所有事件必须包含：
 
-| 字段 | 说明 |
-| --- | --- |
-| `event_id` | 全局唯一事件 ID |
-| `event_type` | 事件类型，例如 `execution.node.failed` |
-| `source` | 事件来源模块 |
-| `occurred_at` | 事件发生时间 |
-| `trace_id` | 跨模块追踪 ID |
-| `idempotency_key` | 幂等键 |
-| `subject_type` / `subject_id` | 事件主体 |
-| `payload_version` | payload 版本 |
-| `payload` | 结构化事件内容 |
+| 字段                              | 说明                                     |
+| --------------------------------- | ---------------------------------------- |
+| `event_id`                      | 全局唯一事件 ID                          |
+| `event_type`                    | 事件类型，例如 `execution.node.failed` |
+| `source`                        | 事件来源模块                             |
+| `occurred_at`                   | 事件发生时间                             |
+| `trace_id`                      | 跨模块追踪 ID                            |
+| `idempotency_key`               | 幂等键                                   |
+| `subject_type` / `subject_id` | 事件主体                                 |
+| `payload_version`               | payload 版本                             |
+| `payload`                       | 结构化事件内容                           |
 
 典型事件：
 
@@ -428,14 +431,14 @@ FPGA / EMU 的资源租约必须包含：
 
 Agent 输出必须结构化：
 
-| 字段 | 说明 |
-| --- | --- |
-| `summary` | 结论摘要 |
-| `confidence` | 置信度 |
-| `evidenceRefs` | 日志、trace、Issue、PR、规则命中等证据 |
-| `recommendedActions` | 建议动作 |
-| `requiresHumanApproval` | 是否需要人工确认 |
-| `emittedEvents` | 后续事件 |
+| 字段                      | 说明                                   |
+| ------------------------- | -------------------------------------- |
+| `summary`               | 结论摘要                               |
+| `confidence`            | 置信度                                 |
+| `evidenceRefs`          | 日志、trace、Issue、PR、规则命中等证据 |
+| `recommendedActions`    | 建议动作                               |
+| `requiresHumanApproval` | 是否需要人工确认                       |
+| `emittedEvents`         | 后续事件                               |
 
 高风险动作必须由 Result Committer 或业务模块根据权限和审批策略提交，Agent 不能直接绕过平台写核心状态。
 
@@ -549,13 +552,13 @@ human.resource.requested
 
 第一版优先把状态、事件、结果协议和资源锁做扎实。建议分阶段落地：
 
-| 阶段 | 目标 | 关键产出 |
-| --- | --- | --- |
-| P0 | 数据主干和基础执行闭环 | 资源登记、用例管理、计划任务、Result JSON、artifact 归档、基础 Dashboard |
-| P1 | 可用的调度和夜间自动化 | 资源租约、昼夜策略、任务队列、夜间执行、失败复跑、资源 unhealthy 隔离 |
-| P2 | Managed Agent 平台 | Agent Registry、MCP/Skill/Subagent 管理、Agent Runtime、Trace 审计 |
-| P3 | 智能化失败闭环 | 失败聚类、Issue/PR 闭环、修复验证 checks、Close Gate |
-| P4 | 增量回归和投片准入 | PR 影响分析、用例选择 Agent、里程碑门禁、风险预测 |
+| 阶段 | 目标                   | 关键产出                                                                 |
+| ---- | ---------------------- | ------------------------------------------------------------------------ |
+| P0   | 数据主干和基础执行闭环 | 资源登记、用例管理、计划任务、Result JSON、artifact 归档、基础 Dashboard |
+| P1   | 可用的调度和夜间自动化 | 资源租约、昼夜策略、任务队列、夜间执行、失败复跑、资源 unhealthy 隔离    |
+| P2   | Managed Agent 平台     | Agent Registry、MCP/Skill/Subagent 管理、Agent Runtime、Trace 审计       |
+| P3   | 智能化失败闭环         | 失败聚类、Issue/PR 闭环、修复验证 checks、Close Gate                     |
+| P4   | 增量回归和投片准入     | PR 影响分析、用例选择 Agent、里程碑门禁、风险预测                        |
 
 ## 12. 设计约束清单
 
@@ -574,19 +577,19 @@ human.resource.requested
 
 ## 13. 子文档索引
 
-| 子文档 | 内容 |
-| --- | --- |
-| `chip-validation-platform-layered.md` | 五层分层架构 |
-| `chip-validation-platform-module-details.md` | 每个模块职责、输入、输出和关键设计点 |
-| `resource-management-scheduling.md` | 资源管理与调度二级架构、状态机、可视化 |
-| `resource-management-data-model.md` | 资源、请求、租约、调度策略、中断、可视化数据模型 |
-| `automation-orchestration.md` | 通用事件规则与 Managed Agent 编排设计 |
-| `automation-orchestration-data-model.md` | Event、Rule、Binding、AgentRun、ToolCall、Action 数据模型 |
-| `use-case-execution-orchestration.md` | 用例执行平台路线、DAG、QEMU precheck、基础 gate |
-| `execution-driver-architecture.svg` | 执行驱动器架构图：轮询 → 匹配 → 下发 → 触发执行 |
-| `use-case-execution-data-model.md` | TestCase、平台标注、ExecutionGraph、CaseNode、Result 数据模型 |
-| `failure-analysis-issue-pr.md` | 类 GitHub Issue/PR 的失败分析闭环 |
-| `failure-analysis-issue-pr-data-model.md` | FailSnapshot、FailureIssue、FixProposal、VerificationCheck、CloseGate 数据模型 |
+| 子文档                                         | 内容                                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| `chip-validation-platform-layered.md`        | 五层分层架构                                                                   |
+| `chip-validation-platform-module-details.md` | 每个模块职责、输入、输出和关键设计点                                           |
+| `resource-management-scheduling.md`          | 资源管理与调度二级架构、状态机、可视化                                         |
+| `resource-management-data-model.md`          | 资源、请求、租约、调度策略、中断、可视化数据模型                               |
+| `automation-orchestration.md`                | 通用事件规则与 Managed Agent 编排设计                                          |
+| `automation-orchestration-data-model.md`     | Event、Rule、Binding、AgentRun、ToolCall、Action 数据模型                      |
+| `use-case-execution-orchestration.md`        | 用例执行平台路线、DAG、QEMU precheck、基础 gate                                |
+| `execution-driver-architecture.svg`          | 执行驱动器架构图：轮询 → 匹配 → 下发 → 触发执行                             |
+| `use-case-execution-data-model.md`           | TestCase、平台标注、ExecutionGraph、CaseNode、Result 数据模型                  |
+| `failure-analysis-issue-pr.md`               | 类 GitHub Issue/PR 的失败分析闭环                                              |
+| `failure-analysis-issue-pr-data-model.md`    | FailSnapshot、FailureIssue、FixProposal、VerificationCheck、CloseGate 数据模型 |
 
 ## 14. 最终结论
 
