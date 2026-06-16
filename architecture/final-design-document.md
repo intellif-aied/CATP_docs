@@ -76,6 +76,7 @@
 | --- | --- |
 | K8s / Worker Runtime | 运行 Worker、Agent Runtime、日志解析、报告、周期任务 |
 | Queue / Lock | 优先级队列、资源互斥、Agent 冲突仲裁、幂等去重 |
+| Hardware Scheduler / labgrid Gateway | 统一硬件资源申请、排队、租约、抢占、释放，并封装 labgrid acquire/release |
 | Log Pipeline | 收集、索引、解析执行日志、资源日志、Agent Trace |
 | MCP 组件 | 管理 MCP Server、Tool Gateway、工具授权、调用审计 |
 | Skill 组件 | 管理 Skill 包、参数、依赖、评审、灰度和发布 |
@@ -101,7 +102,7 @@
 
 ### 3.4 第四层：Agent 层
 
-Agent 必须有明确目的，不能泛化成万能 Agent。所有 Agent 通过平台 API、规则引擎、MCP、Skill 和 Subagent 工作，不能绕过平台直接修改核心状态。
+Agent 必须有明确目的，不能泛化成万能 Agent。所有 Agent 通过平台 API、规则引擎、MCP、Skill 和 Subagent 工作，不能绕过平台直接修改核心状态；资源调度 Agent 只能生成分配、抢占和预约建议，真正的硬件 acquire/release 由基础设施层的 Hardware Scheduler 执行。
 
 | Agent | 触发来源 | 输出 |
 | --- | --- | --- |
@@ -183,9 +184,13 @@ ExecutionGraph（用例执行编排）
 
 关键设计：
 
-- **优先级**：P0 投片阻塞、P1 高风险定位、夜间回归、普通任务有明确排序。
-- **中断**：低价值任务占用稀缺设备时，高价值任务可申请抢占，但必须保护现场。
+- **统一入口**：Jenkins、人工、里程碑、Agent 任务统一走 `ResourceRequest -> ResourceLease -> labgrid`，不能绕过调度层直接访问 labgrid。
+- **注入排队**：外部请求可以指定资源类型、资源池、place、期望时长和 deadline；调度层先入队，再根据策略匹配资源。
+- **优先级队列**：P0 投片阻塞、P1 高风险定位、里程碑任务、夜间回归、普通任务有明确排序，并支持等待老化和资源稀缺加权。
+- **插队与抢占**：高优先级请求可以插队；抢占低优先级租约时必须进入 drain / checkpoint / approval / force 流程。
+- **Kill / reset / release**：强制抢占不是只改状态，必须按资源策略终止当前任务，执行 reset / release / cleanup，并把损失和证据写入审计。
 - **不可虚拟化设备**：FPGA / EMU 默认不能虚拟化，必须通过独占租约避免冲突。
+- **labgrid 边界**：labgrid 负责设备注册、状态、place acquire/release 和 host 控制脚本；业务排队、优先级、抢占审批、占用 metadata 和 UI 解释由调度层负责。
 - **人和程序共享**：人工调试、自动回归、CI、Agent 任务都走 `ResourceRequest`。
 - **昼夜策略**：白天 `Human First`，夜间 `Program Fill`，P0 可覆盖但不能跳过审计。
 
@@ -207,6 +212,8 @@ ExecutionGraph（用例执行编排）
 - **硬件**：FPGA / EMU 等真实物理设备。
 
 **单一入口约束**：所有资源操作（acquire / run / release）必须经过硬件调度层。任何人 / 程序，**包括 Jenkins**，都不得绕过调度层直接写 labgrid，否则会出现两处同时持锁 / 释放的不一致。Jenkins 本期仍是实际执行器，但其资源 acquire / release 必须改走调度层接口。
+
+现有 Jenkins 执行路径可以作为调度层下游执行面复用：Jenkins Controller 将测试阶段调度到目标 Host Agent，Host 拉取 artifact、clone 测试和 debug 仓库、执行 FPGA release / load 脚本、运行 `run_test.sh` / pytest，并在结束时归档 allure / logs。调度层只接管“何时允许占用硬件、如何排队 / 插队 / 抢占、何时 acquire / release labgrid place”这些资源决策。
 
 #### 4.2.2 labgrid 的角色边界
 
@@ -239,7 +246,7 @@ labgrid 只维护「设备状态注册表」——有哪些设备、当前是否
 
 #### 4.2.6 边界：纯基建，与 Agent 平台解耦
 
-硬件调度层是**纯基础设施（KMS 的一部分）**，不与 Agent 平台耦合。Agent 平台通过 MCP / Skill 向调度层申请资源，而不是直接持有 labgrid 句柄。第一版交付后由运维接管。
+硬件调度层是**纯基础设施能力**，不与 Agent 平台耦合。Agent 平台通过 MCP / Skill 向调度层申请资源，而不是直接持有 labgrid 句柄。第一版交付后由运维接管。
 
 #### 4.2.7 待确认 / 风险项
 
@@ -473,12 +480,16 @@ pass / fail / skip / blocked / timeout / infra_fail / model_unsupported
 FPGA / EMU 的资源租约必须包含：
 
 - resource unit。
+- labgrid place、coordinator、host 或等价 backend handle。
 - owner 和 consumer type。
+- source system：Jenkins、人工、里程碑执行器、Agent 等。
 - priority。
 - lease TTL 和续约状态。
 - interruptibility。
 - checkpoint / drain 能力。
+- queue position、effective score、插队或抢占原因。
 - 当前任务、计划、用例、版本矩阵。
+- kill / reset / release / cleanup 策略和执行结果。
 - 调度决策理由。
 - 审批和人工 override 记录。
 
@@ -603,6 +614,22 @@ human.resource.requested
   -> Dashboard 展示 owner、TTL、现场保护
 ```
 
+### 10.5 Jenkins 硬件测试接入
+
+```text
+jenkins.test_stage.requested
+  -> Hardware Scheduler acquire(resource, priority, duration, metadata)
+  -> ResourceRequest(sourceSystem=Jenkins)
+  -> 优先级队列 / 预约窗口 / 抢占检查
+  -> ResourceLease granted
+  -> Scheduler acquire labgrid place
+  -> Jenkins Host Agent 拉取 artifact、clone 代码、执行 FPGA load 和 run_test.sh
+  -> Result JSON / allure / logs 归档
+  -> Scheduler release labgrid place and ResourceLease
+```
+
+Jenkins 仍然负责构建、拉取文件、在指定 Host 上执行既有脚本和归档报告；硬件调度层负责“谁能用这块硬件、什么时候用、是否能插队或抢占、如何释放和审计”。这样可以避免 Jenkins、人工 debug 和新平台同时直接操作 labgrid 造成资源状态分裂。
+
 ## 11. 模块交付边界
 
 第一版优先把状态、事件、结果协议和资源锁做扎实。建议分阶段落地：
@@ -619,6 +646,8 @@ human.resource.requested
 
 - 平台必须以业务对象为中心，Agent 是执行能力，不是状态真相来源。
 - 所有自动化动作必须有事件、规则、Agent 版本、输入上下文、输出证据和审计记录。
+- 所有硬件资源入口必须先经过 Hardware Scheduler，再访问 labgrid；Jenkins 不能继续绕过调度层直接持有 labgrid 决策权。
+- labgrid 是底层 place 锁、状态和 host 控制脚本接口，不承载业务优先级、排队、插队、抢占审批或占用 metadata。
 - FPGA / EMU 不可虚拟化，默认独占租约。
 - 白天优先人工，夜间优先程序，但 P0、预约、现场保护和审批可覆盖默认策略。
 - 用例平台归属由人标注，Agent 只能建议。
