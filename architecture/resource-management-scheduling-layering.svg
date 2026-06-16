@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1180" viewBox="0 0 1500 1180" role="img" aria-labelledby="title desc">
+  <title id="title">基于 labgrid 的硬件调度层分层架构</title>
+  <desc id="desc">消费者（Jenkins / 里程碑执行器 / 人工 / Agent）→ 硬件调度层（注入排队、优先级队列、插队、抢占）→ labgrid Coordinator（设备状态注册表）→ Host / FPGA / EMU 硬件。所有资源操作必经调度层，禁止绕过直写 labgrid。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .page { fill: url(#bg); }
+      .title { font: 700 36px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .section { fill: #ffffff; stroke-width: 1.5; filter: url(#shadow); }
+      .section-title { font: 700 22px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .section-subtitle { font: 400 14px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: rgba(255,255,255,0.88); }
+      .card { fill: #ffffff; stroke-width: 1.3; }
+      .card-title { font: 700 17px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #0f172a; }
+      .card-text { font: 400 13px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #475569; }
+      .chip { font: 700 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #ffffff; }
+      .arrow { stroke: #475569; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .label { font: 600 14.5px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #1e293b; }
+      .note { font: 400 12px "PingFang SC", "Microsoft YaHei", Arial, sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="page" x="0" y="0" width="1500" height="1180"/>
+  <text class="title" x="70" y="58">基于 labgrid 的硬件调度层分层架构</text>
+  <text class="subtitle" x="70" y="90">在 labgrid 的设备锁之上新增一层硬件调度层：把「裸锁」升级为可排队、可优先级、可插队、可抢占。所有资源操作必经调度层，禁止绕过直写 labgrid。</text>
+
+  <!-- Band 1: 消费者 -->
+  <rect class="section" x="60" y="130" width="1380" height="190" rx="22" stroke="#6366f1"/>
+  <rect x="85" y="156" width="210" height="64" rx="18" fill="#4f46e5"/>
+  <text class="section-title" x="109" y="187">消费者</text>
+  <text class="section-subtitle" x="109" y="208">上层业务 / 触发源</text>
+
+  <rect class="card" x="320" y="175" width="250" height="120" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="345" y="207">Jenkins 触发</text>
+  <text class="card-text" x="345" y="234">在 host 拉文件 / clone / 跑脚本</text>
+  <text class="card-text" x="345" y="256">现有 FPGA 测试入口</text>
+
+  <rect class="card" x="605" y="175" width="250" height="120" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="630" y="207">里程碑执行器</text>
+  <text class="card-text" x="630" y="234">批量回归 / 夜间计划</text>
+  <text class="card-text" x="630" y="256">按用例请求硬件资源</text>
+
+  <rect class="card" x="890" y="175" width="250" height="120" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="915" y="207">人工调试</text>
+  <text class="card-text" x="915" y="234">debug / 复现 / 现场保留</text>
+  <text class="card-text" x="915" y="256">优先级 P0（最高）</text>
+
+  <rect class="card" x="1175" y="175" width="250" height="120" rx="14" stroke="#6366f1"/>
+  <text class="card-title" x="1200" y="207">Agent / CI</text>
+  <text class="card-text" x="1200" y="234">修复验证 / 日志分析</text>
+  <text class="card-text" x="1200" y="256">低优先级后台任务</text>
+
+  <!-- Arrow A -->
+  <path class="arrow" d="M 750 320 L 750 430"/>
+  <rect x="300" y="354" width="900" height="44" rx="12" fill="#ffffff" stroke="#6366f1" stroke-width="1.3"/>
+  <text class="label" x="750" y="382" text-anchor="middle">统一入口：acquire / run / release — 所有资源操作必经此层，禁止绕过直写 labgrid</text>
+
+  <!-- Band 2: 硬件调度层（本期新增） -->
+  <rect class="section" x="60" y="430" width="1380" height="210" rx="22" stroke="#16a34a"/>
+  <rect x="1290" y="440" width="130" height="34" rx="17" fill="#dc2626"/>
+  <text class="chip" x="1355" y="462" text-anchor="middle">本期新增</text>
+  <rect x="85" y="456" width="300" height="64" rx="18" fill="#15803d"/>
+  <text class="section-title" x="109" y="487">硬件调度层</text>
+  <text class="section-subtitle" x="109" y="508">在 labgrid 之上 · 单一入口</text>
+
+  <rect class="card" x="320" y="472" width="250" height="70" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="345" y="500">注入排队</text>
+  <text class="card-text" x="345" y="525">请求统一入队，分片避免裸锁抢跑</text>
+
+  <rect class="card" x="605" y="472" width="250" height="70" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="630" y="500">优先级队列</text>
+  <text class="card-text" x="630" y="525">按优先级 + 动态分数排序</text>
+
+  <rect class="card" x="890" y="472" width="250" height="70" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="915" y="500">插队</text>
+  <text class="card-text" x="915" y="525">高优先级插到队前，优先获释放资源</text>
+
+  <rect class="card" x="1175" y="472" width="250" height="70" rx="14" stroke="#16a34a"/>
+  <text class="card-title" x="1200" y="500">抢占</text>
+  <text class="card-text" x="1200" y="525">强制释放 / kill 占用者，需权限</text>
+
+  <rect x="85" y="560" width="1330" height="54" rx="12" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.3"/>
+  <text class="label" x="750" y="593" text-anchor="middle">单一入口约束：任何人 / 程序（含 Jenkins）都不得绕过调度层直接写 labgrid，否则两处同时持锁 / 释放造成不一致</text>
+
+  <!-- Arrow B -->
+  <path class="arrow" d="M 750 640 L 750 750"/>
+  <rect x="300" y="674" width="900" height="44" rx="12" fill="#ffffff" stroke="#16a34a" stroke-width="1.3"/>
+  <text class="label" x="750" y="702" text-anchor="middle">封装 labgrid-client acquire / release — 不关心 labgrid 如何操作硬件（host 脚本 / PCIe 控制由 labgrid 侧负责）</text>
+
+  <!-- Band 3: labgrid Coordinator -->
+  <rect class="section" x="60" y="750" width="1380" height="170" rx="22" stroke="#ea580c"/>
+  <rect x="85" y="776" width="300" height="64" rx="18" fill="#c2410c"/>
+  <text class="section-title" x="109" y="807">labgrid Coordinator</text>
+  <text class="section-subtitle" x="109" y="828">设备状态注册表</text>
+
+  <rect class="card" x="320" y="790" width="545" height="110" rx="14" stroke="#ea580c"/>
+  <text class="card-title" x="345" y="822">只维护设备状态</text>
+  <text class="card-text" x="345" y="849">有哪些设备、当前是否被占用</text>
+  <text class="card-text" x="345" y="872">不做调度，也不关心是谁在占用、为什么占用</text>
+
+  <rect class="card" x="890" y="790" width="545" height="110" rx="14" stroke="#ea580c"/>
+  <text class="card-title" x="915" y="822">调度层封装在上</text>
+  <text class="card-text" x="915" y="849">调度层经 labgrid-client 占用 / 释放设备</text>
+  <text class="card-text" x="915" y="872">host 脚本 / PCIe 控制等仍由 labgrid 侧 / 芯片团队负责</text>
+
+  <!-- Arrow C -->
+  <path class="arrow" d="M 750 920 L 750 1000"/>
+  <rect x="380" y="940" width="740" height="40" rx="10" fill="#ffffff" stroke="#ea580c" stroke-width="1.3"/>
+  <text class="label" x="750" y="966" text-anchor="middle">labgrid 经 host 执行脚本控制真实设备（调度层不介入此层）</text>
+
+  <!-- Band 4: 硬件 -->
+  <rect class="section" x="60" y="1000" width="1380" height="110" rx="22" stroke="#475569"/>
+  <rect x="85" y="1023" width="320" height="64" rx="18" fill="#475569"/>
+  <text class="section-title" x="109" y="1054">Host · FPGA · EMU</text>
+  <text class="section-subtitle" x="109" y="1075">真实物理设备</text>
+
+  <rect class="card" x="425" y="1023" width="990" height="64" rx="14" stroke="#475569"/>
+  <text class="card-title" x="453" y="1050">不可虚拟化（FPGA / EMU 默认独占租约）</text>
+  <text class="card-text" x="453" y="1072">被抢占 / 人工打断后，设备环境可能需要重新 init / reset</text>
+
+  <!-- Side note -->
+  <rect x="60" y="1130" width="1380" height="40" rx="12" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.2"/>
+  <text class="note" x="750" y="1155" text-anchor="middle">硬件调度层是纯基础设施（KMS），与 Agent 平台解耦；Agent 平台经 MCP / Skill 申请资源，不直接持有 labgrid 句柄。本期执行器仍为 Jenkins，但资源 acquire / release 改走调度层。</text>
+</svg>
