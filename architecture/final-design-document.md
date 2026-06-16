@@ -191,6 +191,7 @@ ExecutionGraph（用例执行编排）
 - **Kill / reset / release**：强制抢占不是只改状态，必须按资源策略终止当前任务，执行 reset / release / cleanup，并把损失和证据写入审计。
 - **不可虚拟化设备**：FPGA / EMU 默认不能虚拟化，必须通过独占租约避免冲突。
 - **labgrid 边界**：labgrid 负责设备注册、状态、place acquire/release 和 host 控制脚本；业务排队、优先级、抢占审批、占用 metadata 和 UI 解释由调度层负责。
+- **健康告警**：调度层订阅 labgrid 资源可用性变化，并叠加项目自定义探测；硬件异常时自动隔离资源、影响租约和队列，并通知 owner / 当前使用者 / 资源管理员。
 - **人和程序共享**：人工调试、自动回归、CI、Agent 任务都走 `ResourceRequest`。
 - **昼夜策略**：白天 `Human First`，夜间 `Program Fill`，P0 可覆盖但不能跳过审计。
 
@@ -219,7 +220,35 @@ ExecutionGraph（用例执行编排）
 
 labgrid 只维护「设备状态注册表」——有哪些设备、当前是否被占用；它**不做调度，也不关心是谁在占用、为什么占用**。硬件调度层在 labgrid 之上封装 acquire / release（对应 `labgrid-client acquire / release`），但**不关心 labgrid 如何实际操作硬件**（host 脚本、PCIe 控制等），这些仍由 labgrid 侧 / 芯片团队负责。这样调度层可以聚焦在「争用与公平」，不被底层硬件操作细节拖住。
 
-#### 4.2.3 四个核心能力
+#### 4.2.3 硬件健康检查与告警
+
+labgrid 可以提供底层健康信号，但不是完整的板级健康检查平台。调度层应使用以下输入：
+
+| 信号来源 | 能发现什么 | 调度层处理 |
+| --- | --- | --- |
+| labgrid resource `avail` | USB / udev / 网络串口 / 电源等资源是否可用 | 资源从候选池移除，写入 `ResourceHealthSnapshot` |
+| labgrid exporter / coordinator 事件 | exporter 掉线、资源新增 / 删除 / 参数变化 | 标记 exporter 或资源组异常，触发告警 |
+| `labgrid-client monitor` 或等价订阅 | 资源在线 / 离线实时变化 | 转换为 `resource.health.changed` 事件 |
+| 主动探测 | power get、console / SSH 连接、boot prompt、smoke pytest | 归一化为板级健康状态 |
+
+调度层需要把这些信号归一化为可调度状态，例如 `healthy`、`resource_offline`、`exporter_offline`、`power_unreachable`、`boot_failed`、`probe_failed`。状态不是只用于展示，而要影响调度：
+
+- 已经 `UNHEALTHY` 的 FPGA / EMU 从候选资源中移除，不再发放新租约。
+- 如果异常发生在 active lease 上，当前任务标记为 `infra_fail` 或进入 `INTERRUPTED`，并保留日志、labgrid 事件和探测结果。
+- 受影响的队列请求重新匹配资源；如果无可用资源，保留等待原因并通知 requester。
+- 资源恢复时必须先通过最小健康探测，再从隔离池回到可调度池，避免刚上线就承接高优先级任务。
+
+告警和通知至少分三类：
+
+| 类型 | 触发条件 | 通知对象 | 自动动作 |
+| --- | --- | --- | --- |
+| `resource_offline` | required resource `avail=false` 或资源被 coordinator 删除 | 当前 lease owner、排队 requester、资源管理员 | 隔离资源、暂停发放租约、触发重调度 |
+| `exporter_offline` | exporter 断连导致一组资源消失 | 资源管理员、受影响任务 owner | 批量隔离该 exporter 下资源，生成故障事件 |
+| `probe_failed` | power / console / SSH / smoke test 失败 | 当前使用者、资源管理员、相关计划 owner | 标记 `infra_fail`，保留现场，必要时执行 reset / release |
+
+通知渠道由部署环境配置，至少需要支持 Dashboard 告警、站内通知和 Webhook / IM 集成。所有告警必须关联 `resourceUnitId`、`labgridPlace`、`coordinator`、`exporter`、`currentLeaseId`、`currentTaskId`、影响队列和探测证据。
+
+#### 4.2.4 四个核心能力
 
 | 能力 | 语义 |
 | --- | --- |
@@ -230,7 +259,7 @@ labgrid 只维护「设备状态注册表」——有哪些设备、当前是否
 
 插队解决「排到队前」，抢占解决「踢掉占用者」；二者都受最小优先级差与审批约束。
 
-#### 4.2.4 优先级阶梯
+#### 4.2.5 优先级阶梯
 
 落到本场景的具体排序（与 `PriorityClass` 对齐）：
 
@@ -240,19 +269,20 @@ labgrid 只维护「设备状态注册表」——有哪些设备、当前是否
 | 里程碑 / 批量回归 | P1 - P2 | 夜间 `Program Fill` 填充 FPGA / EMU |
 | Agent 改代码 / 后台探索 | P3 - P4 | 低优先级长任务，可被抢占 / 延后 |
 
-#### 4.2.5 调度接口
+#### 4.2.6 调度接口
 
-调度层向消费者暴露 acquire → run → release（即 init / run / de-init）语义。消费者申请后，调度层要么**发放租约**（附带使用期限与续约），要么告知「被占用，预计等待 X」。抢占释放后，设备环境可能需要重新 init / reset（见 4.3 中断语义中的 `FORCE`）。
+调度层向消费者暴露 acquire → run → release（即 init / run / de-init）语义。消费者申请后，调度层要么**发放租约**（附带使用期限与续约），要么告知「被占用，预计等待 X」。抢占释放后，设备环境可能需要重新 init / reset（见 4.3 中断语义中的 `FORCE`）。硬件健康异常也会触发同一套租约中断与重调度流程，但释放原因必须标记为 infra / health，而不是业务抢占。
 
-#### 4.2.6 边界：纯基建，与 Agent 平台解耦
+#### 4.2.7 边界：纯基建，与 Agent 平台解耦
 
 硬件调度层是**纯基础设施能力**，不与 Agent 平台耦合。Agent 平台通过 MCP / Skill 向调度层申请资源，而不是直接持有 labgrid 句柄。第一版交付后由运维接管。
 
-#### 4.2.7 待确认 / 风险项
+#### 4.2.8 待确认 / 风险项
 
 - **接口同步 vs 异步**：决定里程碑执行器等上层如何驱动调度层（一次性提交全部并轮询，还是先锁后跑再释放）。需 owner 定型，并直接影响上层调度实现。
 - **环境物料是否 ready**：批量测试时编译产物是否已在 host 上就绪（简单 init / run / de-init），还是仍需一套复杂编译 / reset 流程。当前方向是批量应 ready、仅版本跳变时重新 init，需与芯片团队确认——该点直接决定抢占后「kill + 重新 init」的成本与语义。
 - **kill 权限**：抢占需要调度层具备强制终止占用任务的能力（权限与现场保护），需明确授权范围。
+- **健康探测权限**：power / console / SSH / smoke test 是否需要 acquire 后执行，还是允许只读探测，需要按资源类型定义权限和频率，避免健康检查本身干扰正在执行的测试。
 
 ### 4.3 状态机
 
@@ -421,6 +451,9 @@ RuleActivation 1 -- 1 AgentRun
 requirement.changed
 case.updated
 resource.heartbeat
+resource.health.changed
+resource.health.alerted
+resource.health.recovered
 resource.lease.expiring
 plan.created
 execution.node.failed
@@ -483,6 +516,7 @@ FPGA / EMU 的资源租约必须包含：
 - labgrid place、coordinator、host 或等价 backend handle。
 - owner 和 consumer type。
 - source system：Jenkins、人工、里程碑执行器、Agent 等。
+- current health status 和最近一次健康探测证据。
 - priority。
 - lease TTL 和续约状态。
 - interruptibility。
@@ -493,7 +527,25 @@ FPGA / EMU 的资源租约必须包含：
 - 调度决策理由。
 - 审批和人工 override 记录。
 
-### 8.5 Agent Output
+### 8.5 Resource Health Alert
+
+硬件异常告警必须结构化，便于通知、重调度和事后追溯：
+
+| 字段 | 说明 |
+| --- | --- |
+| `alert_id` | 告警 ID |
+| `resource_unit_id` | 平台资源 ID |
+| `labgrid_place` | labgrid place 名 |
+| `coordinator` / `exporter` | 关联 labgrid coordinator / exporter |
+| `health_status` | `resource_offline` / `exporter_offline` / `power_unreachable` / `boot_failed` / `probe_failed` |
+| `severity` | `critical` / `warning` / `info` |
+| `current_lease_id` / `current_task_id` | 受影响租约和任务 |
+| `affected_request_ids` | 受影响的排队请求 |
+| `evidence_refs` | labgrid monitor 事件、`avail` 快照、power / console / pytest 探测结果 |
+| `auto_action` | isolated / rescheduled / marked_infra_fail / waiting_manual_repair |
+| `notified_to` | 已通知对象和渠道 |
+
+### 8.6 Agent Output
 
 Agent 输出必须结构化：
 
@@ -630,6 +682,22 @@ jenkins.test_stage.requested
 
 Jenkins 仍然负责构建、拉取文件、在指定 Host 上执行既有脚本和归档报告；硬件调度层负责“谁能用这块硬件、什么时候用、是否能插队或抢占、如何释放和审计”。这样可以避免 Jenkins、人工 debug 和新平台同时直接操作 labgrid 造成资源状态分裂。
 
+### 10.6 硬件异常告警与重调度
+
+```text
+labgrid.resource.changed / active_probe.failed
+  -> ResourceHealthSnapshot
+  -> ResourceHealthAlert
+  -> ResourceUnit 标记 UNHEALTHY / isolated
+  -> active lease 标记 infra_fail 或进入 INTERRUPTED
+  -> 受影响队列请求重新匹配资源
+  -> 通知 current owner / requester / resource admin
+  -> 恢复后执行最小健康探测
+  -> ResourceUnit 回到 IDLE 或继续隔离
+```
+
+硬件异常不能只做告警展示；它必须同步影响调度结果。调度层在告警期间不得向异常资源发放新租约，也不能把因硬件异常失败的任务归类为用例失败。
+
 ## 11. 模块交付边界
 
 第一版优先把状态、事件、结果协议和资源锁做扎实。建议分阶段落地：
@@ -637,7 +705,7 @@ Jenkins 仍然负责构建、拉取文件、在指定 Host 上执行既有脚本
 | 阶段 | 目标 | 关键产出 |
 | --- | --- | --- |
 | P0 | 数据主干和基础执行闭环 | 资源登记、用例管理、计划任务、Result JSON、artifact 归档、基础 Dashboard |
-| P1 | 可用的调度和夜间自动化 | 资源租约、昼夜策略、任务队列、夜间执行、失败复跑、资源 unhealthy 隔离 |
+| P1 | 可用的调度和夜间自动化 | 资源租约、昼夜策略、任务队列、夜间执行、失败复跑、资源 unhealthy 隔离、硬件异常告警通知 |
 | P2 | Managed Agent 平台 | Agent Registry、MCP/Skill/Subagent 管理、Agent Runtime、Trace 审计 |
 | P3 | 智能化失败闭环 | 失败聚类、Issue/PR 闭环、修复验证 checks、Close Gate |
 | P4 | 增量回归和投片准入 | PR 影响分析、用例选择 Agent、里程碑门禁、风险预测 |
@@ -648,6 +716,8 @@ Jenkins 仍然负责构建、拉取文件、在指定 Host 上执行既有脚本
 - 所有自动化动作必须有事件、规则、Agent 版本、输入上下文、输出证据和审计记录。
 - 所有硬件资源入口必须先经过 Hardware Scheduler，再访问 labgrid；Jenkins 不能继续绕过调度层直接持有 labgrid 决策权。
 - labgrid 是底层 place 锁、状态和 host 控制脚本接口，不承载业务优先级、排队、插队、抢占审批或占用 metadata。
+- labgrid 的 `avail`、exporter 和 monitor 事件只能作为底层健康信号；完整板级健康必须由调度层叠加主动探测并归一化为调度状态。
+- 硬件健康异常必须触发资源隔离、租约影响评估、队列重调度和通知，不能只停留在 Dashboard 展示。
 - FPGA / EMU 不可虚拟化，默认独占租约。
 - 白天优先人工，夜间优先程序，但 P0、预约、现场保护和审批可覆盖默认策略。
 - 用例平台归属由人标注，Agent 只能建议。
