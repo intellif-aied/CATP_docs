@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="760" viewBox="0 0 1320 760">
+  <title>修复 Agent 简化流程</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .lane { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; rx: 10; }
+      .worker { fill: #e0f2fe; stroke: #0369a1; }
+      .agent { fill: #ede9fe; stroke: #6d28d9; }
+      .mcp { fill: #fef3c7; stroke: #b45309; }
+      .pass { fill: #dcfce7; stroke: #15803d; }
+      .node { stroke-width: 1.4; rx: 8; }
+      .decision { fill: #ffffff; stroke: #334155; stroke-width: 1.5; }
+      .text { font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; fill: #0f172a; font-size: 15px; }
+      .small { font-size: 12.5px; fill: #475569; }
+      .title { font-size: 22px; font-weight: 700; fill: #0f172a; }
+      .lane-title { font-size: 16px; font-weight: 700; fill: #334155; }
+      .arrow { stroke: #334155; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .label { font-size: 12.5px; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1320" height="760"/>
+  <text class="title" x="42" y="48">修复 Agent 流程图</text>
+  <text class="small" x="42" y="74">修复 Agent 只处理 software，输入保持为分析结论、失败日志、仓库和验证参数；编译和测试通过 MCP 触发芯片 Jenkins。</text>
+
+  <rect class="lane" x="36" y="105" width="220" height="600"/>
+  <rect class="lane" x="290" y="105" width="560" height="600"/>
+  <rect class="lane" x="885" y="105" width="390" height="600"/>
+  <text class="lane-title" x="58" y="135">ResultAnalysis Worker</text>
+  <text class="lane-title" x="312" y="135">Fix Agent</text>
+  <text class="lane-title" x="907" y="135">MCP / 芯片 Jenkins</text>
+
+  <g transform="translate(58,180)">
+    <rect class="node worker" width="175" height="70"/>
+    <text class="text" x="87.5" y="29" text-anchor="middle">准备 fix 输入</text>
+    <text class="small" x="87.5" y="52" text-anchor="middle">分析结论 + 日志</text>
+  </g>
+  <g transform="translate(58,495)">
+    <rect class="node worker" width="175" height="70"/>
+    <text class="text" x="87.5" y="29" text-anchor="middle">校验并写回</text>
+    <text class="small" x="87.5" y="52" text-anchor="middle">attempt + timeline</text>
+  </g>
+
+  <g transform="translate(320,160)">
+    <rect class="node agent" width="175" height="65"/>
+    <text class="text" x="87.5" y="27" text-anchor="middle">lead-fix</text>
+    <text class="small" x="87.5" y="49" text-anchor="middle">调度和汇总</text>
+  </g>
+  <g transform="translate(570,160)">
+    <rect class="node agent" width="190" height="65"/>
+    <text class="text" x="95" y="27" text-anchor="middle">code-fix</text>
+    <text class="small" x="95" y="49" text-anchor="middle">最小修改、patch、commit</text>
+  </g>
+  <g transform="translate(570,300)">
+    <rect class="node agent" width="190" height="65"/>
+    <text class="text" x="95" y="27" text-anchor="middle">compile-validation</text>
+    <text class="small" x="95" y="49" text-anchor="middle">调用编译 MCP</text>
+  </g>
+  <g transform="translate(570,445)">
+    <rect class="node agent" width="190" height="65"/>
+    <text class="text" x="95" y="27" text-anchor="middle">test-validation</text>
+    <text class="small" x="95" y="49" text-anchor="middle">调用测试 MCP</text>
+  </g>
+  <g transform="translate(320,570)">
+    <rect class="node agent" width="175" height="70"/>
+    <text class="text" x="87.5" y="29" text-anchor="middle">output-review</text>
+    <text class="small" x="87.5" y="52" text-anchor="middle">检查输出契约</text>
+  </g>
+  <g transform="translate(570,570)">
+    <rect class="node pass" width="190" height="70"/>
+    <text class="text" x="95" y="29" text-anchor="middle">PR 或失败物料</text>
+    <text class="small" x="95" y="52" text-anchor="middle">等待人工或回灌分析</text>
+  </g>
+
+  <g transform="translate(915,288)">
+    <rect class="node mcp" width="150" height="70"/>
+    <text class="text" x="75" y="29" text-anchor="middle">编译 MCP</text>
+    <text class="small" x="75" y="52" text-anchor="middle">触发 Jenkins build</text>
+  </g>
+  <g transform="translate(1100,288)">
+    <rect class="node mcp" width="145" height="70"/>
+    <text class="text" x="72.5" y="29" text-anchor="middle">Jenkins 编译</text>
+    <text class="small" x="72.5" y="52" text-anchor="middle">日志和产物</text>
+  </g>
+  <g transform="translate(915,433)">
+    <rect class="node mcp" width="150" height="70"/>
+    <text class="text" x="75" y="29" text-anchor="middle">测试 MCP</text>
+    <text class="small" x="75" y="52" text-anchor="middle">触发 Jenkins test</text>
+  </g>
+  <g transform="translate(1100,433)">
+    <rect class="node mcp" width="145" height="70"/>
+    <text class="text" x="72.5" y="29" text-anchor="middle">Jenkins 测试</text>
+    <text class="small" x="72.5" y="52" text-anchor="middle">result 和日志</text>
+  </g>
+
+  <path class="arrow" d="M233 215 C275 215 285 193 320 193"/>
+  <line class="arrow" x1="495" y1="193" x2="570" y2="193"/>
+  <path class="arrow" d="M665 225 L665 300"/>
+  <line class="arrow" x1="760" y1="333" x2="915" y2="323"/>
+  <line class="arrow" x1="1065" y1="323" x2="1100" y2="323"/>
+  <path class="arrow" d="M1100 358 C1010 392 845 392 760 345"/>
+  <path class="arrow" d="M665 365 L665 445"/>
+  <line class="arrow" x1="760" y1="478" x2="915" y2="468"/>
+  <line class="arrow" x1="1065" y1="468" x2="1100" y2="468"/>
+  <path class="arrow" d="M1100 503 C1010 540 845 535 760 490"/>
+  <path class="arrow" d="M665 510 L665 570"/>
+  <line class="arrow" x1="570" y1="605" x2="495" y2="605"/>
+  <path class="arrow" d="M320 605 C270 605 250 530 233 530"/>
+</svg>

@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820">
+  <title>结果分析 Issue 状态机</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .node { fill: #ffffff; stroke: #334155; stroke-width: 1.5; rx: 8; }
+      .work { fill: #e0f2fe; stroke: #0369a1; }
+      .human { fill: #fef3c7; stroke: #b45309; }
+      .done { fill: #dcfce7; stroke: #15803d; }
+      .err { fill: #fee2e2; stroke: #b91c1c; }
+      .decision { fill: #ede9fe; stroke: #6d28d9; stroke-width: 1.5; }
+      .text { font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; fill: #0f172a; font-size: 16px; }
+      .small { font-size: 13px; fill: #475569; }
+      .label { font-size: 13px; fill: #334155; }
+      .title { font-size: 22px; font-weight: 700; fill: #0f172a; }
+      .arrow { stroke: #334155; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 6 5; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1280" height="820"/>
+  <text class="title" x="48" y="52">结果分析 Issue 状态机</text>
+  <text class="small" x="48" y="78">自动化只能推进到等待人工关闭或人工合入，不能自动关闭 Issue，也不能自动合并 PR。</text>
+
+  <g transform="translate(60,150)">
+    <rect class="node" width="190" height="72"/>
+    <text class="text" x="95" y="30" text-anchor="middle">pending_analysis</text>
+    <text class="small" x="95" y="54" text-anchor="middle">Issue 已创建</text>
+  </g>
+
+  <g transform="translate(310,150)">
+    <rect class="node work" width="190" height="72"/>
+    <text class="text" x="95" y="30" text-anchor="middle">analyzing</text>
+    <text class="small" x="95" y="54" text-anchor="middle">分析 Agent 运行</text>
+  </g>
+
+  <g transform="translate(575,132)">
+    <polygon class="decision" points="95,0 190,55 95,110 0,55"/>
+    <text class="text" x="95" y="48" text-anchor="middle">结论判定</text>
+    <text class="small" x="95" y="72" text-anchor="middle">三类之一</text>
+  </g>
+
+  <g transform="translate(835,75)">
+    <rect class="node work" width="190" height="72"/>
+    <text class="text" x="95" y="30" text-anchor="middle">waiting_fix</text>
+    <text class="small" x="95" y="54" text-anchor="middle">software 待修复</text>
+  </g>
+
+  <g transform="translate(1070,75)">
+    <rect class="node work" width="170" height="72"/>
+    <text class="text" x="85" y="30" text-anchor="middle">fixing</text>
+    <text class="small" x="85" y="54" text-anchor="middle">修复 Agent 运行</text>
+  </g>
+
+  <g transform="translate(590,330)">
+    <rect class="node human" width="180" height="72"/>
+    <text class="text" x="90" y="30" text-anchor="middle">notify_owner</text>
+    <text class="small" x="90" y="54" text-anchor="middle">通知人工确认</text>
+  </g>
+
+  <g transform="translate(835,330)">
+    <rect class="node human" width="190" height="72"/>
+    <text class="text" x="95" y="30" text-anchor="middle">waiting_manual_close</text>
+    <text class="small" x="95" y="54" text-anchor="middle">等待人工关闭</text>
+  </g>
+
+  <g transform="translate(1070,330)">
+    <rect class="node done" width="170" height="72"/>
+    <text class="text" x="85" y="30" text-anchor="middle">closed</text>
+    <text class="small" x="85" y="54" text-anchor="middle">人工关闭</text>
+  </g>
+
+  <g transform="translate(310,430)">
+    <rect class="node err" width="190" height="72"/>
+    <text class="text" x="95" y="30" text-anchor="middle">failed</text>
+    <text class="small" x="95" y="54" text-anchor="middle">系统或 Agent 异常</text>
+  </g>
+
+  <g transform="translate(590,555)">
+    <rect class="node err" width="180" height="72"/>
+    <text class="text" x="90" y="30" text-anchor="middle">notification_failed</text>
+    <text class="small" x="90" y="54" text-anchor="middle">通知失败待处理</text>
+  </g>
+
+  <g transform="translate(60,555)">
+    <rect class="node human" width="190" height="72"/>
+    <text class="text" x="95" y="30" text-anchor="middle">cancelled</text>
+    <text class="small" x="95" y="54" text-anchor="middle">人工取消</text>
+  </g>
+
+  <line class="arrow" x1="250" y1="186" x2="310" y2="186"/>
+  <line class="arrow" x1="500" y1="186" x2="575" y2="186"/>
+  <path class="arrow" d="M765 186 C805 140 805 112 835 112"/>
+  <text class="label" x="783" y="122">software</text>
+  <line class="arrow" x1="1025" y1="111" x2="1070" y2="111"/>
+  <path class="arrow" d="M1155 147 C1155 210 1040 265 955 330"/>
+  <text class="label" x="1072" y="226">编译/测试通过，创建 PR</text>
+  <path class="arrow" d="M1155 75 C1155 36 1075 36 1075 75"/>
+  <text class="label" x="1035" y="34">失败且 attempt &lt; 3</text>
+  <path class="arrow" d="M1070 130 C850 255 270 280 155 222"/>
+  <text class="label" x="520" y="286">第 3 次失败且 round &lt; 5，回灌新物料</text>
+  <path class="arrow" d="M670 242 C680 278 680 300 680 330"/>
+  <text class="label" x="694" y="292">hardware / unknown</text>
+  <line class="arrow" x1="770" y1="366" x2="835" y2="366"/>
+  <line class="arrow" x1="1025" y1="366" x2="1070" y2="366"/>
+  <text class="label" x="1034" y="353">人工关闭</text>
+  <path class="arrow dash" d="M1070 402 C900 725 150 720 155 627"/>
+  <text class="label" x="600" y="735">人工重新打开后重新分析</text>
+  <path class="arrow" d="M575 214 C500 285 440 360 405 430"/>
+  <text class="label" x="454" y="335">Agent 失败或输出非法</text>
+  <path class="arrow" d="M680 402 L680 555"/>
+  <text class="label" x="695" y="482">通知失败</text>
+  <path class="arrow" d="M770 591 C850 565 880 470 905 402"/>
+  <text class="label" x="846" y="532">重发或线下确认</text>
+  <path class="arrow dash" d="M310 466 C250 505 220 535 190 555"/>
+  <text class="label" x="247" y="526">人工取消</text>
+</svg>
