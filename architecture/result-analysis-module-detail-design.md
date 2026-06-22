@@ -108,6 +108,14 @@
 | `codeContext.repositories[].commitSha` | 建议 | 精确 commit；没有时只能按分支头部分析 |
 | `materials.logPackageUri` | 是 | 完整日志包，包含 result.json、case.log、trace、dump、waveform 等 |
 | `materials.knowledgePackageUri` | 建议 | 知识包，包含设计文档、历史问题、规则说明等 |
+补充说明：`executionContext.reproduceCommand` 和 `materials.logPackageUri` 需要在接口联调前与芯片侧 8 个领域负责人逐一确认。
+
+| 项 | 需要确认的问题 | 影响 |
+| --- | --- | --- |
+| `executionContext.reproduceCommand` | 每个领域的失败用例是否都支持“单用例独立执行/复现”；如果不能独立执行，需要确认是否应改成任务级复现命令、批量回归命令、Jenkins job 参数，或增加额外的复现上下文字段 | 影响修复 Agent 后续调用测试 MCP 进行自动验证；如果命令不能稳定复现单个失败用例，测试验证结果可能无法作为修复是否成功的依据 |
+| `materials.logPackageUri` | 每个领域日志包 zip 内部具体包含哪些产物，目录结构是否统一；例如 Jenkins 构建日志、测试日志、串口日志、仿真日志、trace、dump、waveform、截图或图片等 | 影响分析 Agent 的日志解析、证据提取和评测数据建设；如果各领域格式差异较大，需要在日志包内增加 `manifest.json` 或约定最小必备文件 |
+
+建议与 8 个领域负责人对齐后，补充一份领域维度的日志包约定，至少明确：zip 目录结构、核心日志文件名、是否包含 result.json、是否包含 Jenkins 日志、是否包含串口日志、是否包含图像/波形/trace 产物，以及每类产物在分析 Agent 中的使用优先级。
 
 ## 3. 数据模型
 
@@ -631,7 +639,126 @@ analysis round N conclusion = software
 
 编译或测试失败都视为本次修复 attempt failed。失败日志必须通过 `failureForNextAnalysis` 回灌给下一次分析，避免分析 Agent 依赖代码仓库或知识包做判断。
 
-## 7. Worker 编排
+## 7. Agent 评测设计
+
+### 7.1 评测数据来源
+
+| Agent | 输入数据 | 标准输出 | 数据来源 |
+| --- | --- | --- | --- |
+| 分析 Agent | `analysis-input.json`、失败日志包、result.json | `conclusionType`、关键证据、必要时包含 `fixHint` | 用例执行失败后的真实日志；修复 Agent 失败后回灌的编译/测试日志；芯片领域负责人提供的基础样例 |
+| 修复 Agent | `fix-input.json`、目标仓库、分支、commit、失败日志、编译 MCP 和测试 MCP 参数 | 编译通过、测试通过、patch/commit/PR 信息；失败时包含 `failureForNextAnalysis` | 已确认的 software 类问题；历史已修复 PR；芯片领域负责人提供的可修复样例 |
+
+### 7.2 评测数据收集
+
+为了对接用例执行失败后的真实日志，需要先做一轮数据收集工作。和芯片 8 个领域的负责人对齐，每个领域先提供一批基础样例。
+
+每条分析 Agent 样例只需要收集：
+
+| 内容 | 说明 |
+| --- | --- |
+| Agent 输入 | `analysis-input.json` |
+| 日志包 | 用例首次失败日志，或修复失败后的编译/测试日志 |
+| result.json | 如果有结构化结果则提供 |
+| 标准输出 | 人工确认的 `software`、`hardware`、`unknown` |
+| 标准依据 | 简短说明即可，最好能指向日志片段 |
+
+每条修复 Agent 样例只需要收集：
+
+| 内容 | 说明 |
+| --- | --- |
+| Agent 输入 | `fix-input.json` |
+| 代码上下文 | repo、branch、commit |
+| 失败日志 | 修复依据的日志包 |
+| 验证入口 | 编译 MCP、测试 MCP、Jenkins job、复现命令 |
+| 标准输出 | 编译和测试是否应通过；如已有历史修复，可附 PR、commit 或 patch |
+
+建议统一成简单目录：
+
+```text
+result-analysis-eval/
+  analysis/
+    {caseId}/
+      analysis-input.json
+      logs.zip
+      result.json
+      expected-output.json
+  fix/
+    {caseId}/
+      fix-input.json
+      logs.zip
+      expected-output.json
+```
+
+`expected-output.json` 示例：
+
+```json
+{
+  "expectedConclusionType": "software",
+  "evidenceHint": "case.log 中 doorbell expected 1 actual 0",
+  "expectedFixPass": true
+}
+```
+
+其中 `expectedConclusionType` 主要给分析 Agent 使用，`expectedFixPass` 主要给修复 Agent 使用。
+
+### 7.3 自动评测和人工参与
+
+分析 Agent 可以自动评测：
+
+- 校验输出 JSON schema。
+- 对比 `conclusionType` 是否等于标准答案。
+- 校验证据是否引用日志包或 result.json。
+- 校验 `hardware`、`unknown` 不会触发修复提示。
+
+分析 Agent 的人工参与主要发生在两处：
+
+- 初始收集样例时，由 8 个领域负责人给出标准结论。
+- 自动评测结果异常时，人工复核标准答案或补充日志样例。
+
+修复 Agent 以自动评测为主：
+
+- 自动运行修复 Agent。
+- 自动调用编译 MCP。
+- 自动调用测试 MCP。
+- 编译和测试都通过，则修复评测通过。
+- 编译或测试失败，则检查是否生成 `failureForNextAnalysis`，供下一轮分析评测使用。
+
+修复 Agent 的人工参与主要用于抽查 patch 风险，或在样例首次沉淀时确认历史修复是否有效。
+
+### 7.4 评测指标
+
+分析 Agent 建议保留 4 个指标：
+
+| 指标 | 说明 |
+| --- | --- |
+| 三分类准确率 | `software`、`hardware`、`unknown` 是否命中标准答案 |
+| software 误触发率 | `hardware` 或 `unknown` 被误判为 `software` 的比例 |
+| 证据命中率 | 输出证据是否引用到日志包、result.json 或关键日志片段 |
+| 输出合法率 | 输出 JSON 是否满足 schema 和字段枚举要求 |
+
+修复 Agent 建议保留 4 个指标：
+
+| 指标 | 说明 |
+| --- | --- |
+| patch 生成率 | 是否生成 patch 或 commit |
+| 编译通过率 | 编译 MCP / Jenkins build 是否通过 |
+| 测试通过率 | 测试 MCP / Jenkins test 是否通过 |
+| 失败回灌完整率 | 修复失败时是否生成 `failureForNextAnalysis` |
+
+### 7.5 自动化评测流程
+
+评测流程应尽量自动化：
+
+1. 从 8 个领域负责人处收集基础样例，每条样例只保留 Agent 输入和标准输出。
+2. 将样例整理到 `result-analysis-eval/analysis` 和 `result-analysis-eval/fix`。
+3. 自动运行分析 Agent，比较输出和 `expected-output.json`。
+4. 对分析结果为 `software` 的样例，自动运行修复 Agent。
+5. 修复 Agent 自动调用编译 MCP 和测试 MCP。
+6. 汇总自动评测报告，包括通过率、失败样例、Jenkins 链接和日志 URI。
+7. 对失败样例做人工抽查，确认是 Agent 问题、样例标准答案问题，还是日志材料不足。
+8. Agent prompt、模型、工具或流程变更后，重新跑同一批评测集做回归。
+
+## 8. Worker 编排
 
 结果分析 Worker 是确定性编排器，不是 Agent。建议职责：
 
@@ -664,7 +791,7 @@ analysis round N conclusion = software
 - `fixing` 超时：查询修复 Agent 任务；不可恢复则标记 fixAttempt failed。
 - `notification_failed`：允许人工重发或确认线下通知。
 
-## 8. API 设计
+## 9. API 设计
 
 ### 创建 issue 输入接口
 
@@ -708,7 +835,7 @@ analysis round N conclusion = software
 | `POST /internal/result-analysis/issues/:id/analysis-callback` | 分析 Agent 回调 |
 | `POST /internal/result-analysis/fix-attempts/:id/fix-callback` | 修复 Agent 回调 |
 
-## 9. 通知与人工关闭
+## 10. 通知与人工关闭
 
 通知触发点：
 
@@ -738,16 +865,16 @@ analysis round N conclusion = software
 - 关闭后追加 `manual_close` 时间线事件。
 - 关闭后 `activeFlag=false`，同一执行结果后续如果重新打开或重新创建必须有明确人工动作。
 
-## 10. 页面设计
+## 11. 页面设计
 
-### 10.1 列表页示例
+### 11.1 列表页示例
 
 ![结果分析列表页](./result-analysis-page-list.png)
 
-### 10.2 详情页示例
+### 11.2 详情页示例
 
 ![结果分析详情页概览](./result-analysis-page-detail-overview.png)
 
-### 10.3 流程时间线示例
+### 11.3 流程时间线示例
 
 ![结果分析流程时间线](./result-analysis-page-timeline.png)
