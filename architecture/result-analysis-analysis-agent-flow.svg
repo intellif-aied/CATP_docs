@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="620" viewBox="0 0 1180 620">
+  <title>分析 Agent 简化流程</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .lane { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; rx: 10; }
+      .worker { fill: #e0f2fe; stroke: #0369a1; }
+      .agent { fill: #ede9fe; stroke: #6d28d9; }
+      .service { fill: #dcfce7; stroke: #15803d; }
+      .guard { fill: #fef3c7; stroke: #b45309; }
+      .node { stroke-width: 1.4; rx: 8; }
+      .text { font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; fill: #0f172a; font-size: 15px; }
+      .small { font-size: 12.5px; fill: #475569; }
+      .title { font-size: 22px; font-weight: 700; fill: #0f172a; }
+      .lane-title { font-size: 16px; font-weight: 700; fill: #334155; }
+      .arrow { stroke: #334155; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .label { font-size: 12.5px; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1180" height="620"/>
+  <text class="title" x="42" y="48">分析 Agent 流程图</text>
+  <text class="small" x="42" y="74">分析 Agent 只分析失败日志或修复失败日志，输出 software / hardware / unknown，不读取代码仓库，不依赖知识包。</text>
+
+  <rect class="lane" x="36" y="105" width="245" height="460"/>
+  <rect class="lane" x="315" y="105" width="550" height="460"/>
+  <rect class="lane" x="900" y="105" width="235" height="460"/>
+  <text class="lane-title" x="58" y="135">ResultAnalysis Worker</text>
+  <text class="lane-title" x="337" y="135">Analysis Agent</text>
+  <text class="lane-title" x="922" y="135">ResultAnalysis Service</text>
+
+  <g transform="translate(58,175)">
+    <rect class="node worker" width="200" height="70"/>
+    <text class="text" x="100" y="29" text-anchor="middle">构造分析输入</text>
+    <text class="small" x="100" y="52" text-anchor="middle">issue + failureLogs</text>
+  </g>
+  <g transform="translate(58,325)">
+    <rect class="node worker" width="200" height="70"/>
+    <text class="text" x="100" y="29" text-anchor="middle">启动 AgentRun</text>
+    <text class="small" x="100" y="52" text-anchor="middle">analysis-input.json</text>
+  </g>
+
+  <g transform="translate(345,160)">
+    <rect class="node agent" width="190" height="68"/>
+    <text class="text" x="95" y="28" text-anchor="middle">lead-analysis</text>
+    <text class="small" x="95" y="51" text-anchor="middle">调度和汇总</text>
+  </g>
+  <g transform="translate(625,160)">
+    <rect class="node agent" width="190" height="68"/>
+    <text class="text" x="95" y="28" text-anchor="middle">log-index</text>
+    <text class="small" x="95" y="51" text-anchor="middle">索引日志和 result</text>
+  </g>
+  <g transform="translate(485,285)">
+    <rect class="node agent" width="210" height="72"/>
+    <text class="text" x="105" y="29" text-anchor="middle">log-evidence</text>
+    <text class="small" x="105" y="52" text-anchor="middle">提取关键失败证据</text>
+  </g>
+  <g transform="translate(350,425)">
+    <rect class="node guard" width="205" height="76"/>
+    <text class="text" x="102.5" y="29" text-anchor="middle">classification</text>
+    <text class="small" x="102.5" y="52" text-anchor="middle">三类结论判定</text>
+  </g>
+  <g transform="translate(625,425)">
+    <rect class="node agent" width="190" height="76"/>
+    <text class="text" x="95" y="29" text-anchor="middle">output-review</text>
+    <text class="small" x="95" y="52" text-anchor="middle">schema 和证据检查</text>
+  </g>
+
+  <g transform="translate(922,220)">
+    <rect class="node service" width="190" height="72"/>
+    <text class="text" x="95" y="29" text-anchor="middle">写回分析结果</text>
+    <text class="small" x="95" y="52" text-anchor="middle">round + timeline</text>
+  </g>
+  <g transform="translate(922,375)">
+    <rect class="node service" width="190" height="72"/>
+    <text class="text" x="95" y="29" text-anchor="middle">路由下一步</text>
+    <text class="small" x="95" y="52" text-anchor="middle">software 修复，否则人工</text>
+  </g>
+
+  <path class="arrow" d="M158 245 L158 325"/>
+  <path class="arrow" d="M258 360 C295 360 305 195 345 195"/>
+  <line class="arrow" x1="535" y1="194" x2="625" y2="194"/>
+  <path class="arrow" d="M720 228 C720 265 655 265 620 285"/>
+  <path class="arrow" d="M590 357 C545 380 490 395 455 425"/>
+  <line class="arrow" x1="555" y1="463" x2="625" y2="463"/>
+  <path class="arrow" d="M815 463 C875 463 880 256 922 256"/>
+  <path class="arrow" d="M1017 292 L1017 375"/>
+</svg>
